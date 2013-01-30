@@ -50,15 +50,15 @@ class autotool::tool {
     unless => "cabal list --installed --simple-output | grep autotool-db",
   }
 
-  exec { 'test':
-    command => "cabal install",
-    cwd => "/home/vagrant/tool/test",
-    require => [ Exec["collection"],
-                 Exec["interface"],
-                 Exec["db"]],
-    onlyif => "test -d /home/vagrant/tool",
-    unless => "cabal list --installed --simple-output | grep autotool-test",
-  }
+  # exec { 'test':
+  #   command => "cabal install",
+  #   cwd => "/home/vagrant/tool/test",
+  #   require => [ Exec["collection"],
+  #                Exec["interface"],
+  #                Exec["db"]],
+  #   onlyif => "test -d /home/vagrant/tool",
+  #   unless => "cabal list --installed --simple-output | grep autotool-test",
+  # }
 
   exec { 'server-interface':
     command => "cabal install",
