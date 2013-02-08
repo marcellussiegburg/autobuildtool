@@ -7,10 +7,10 @@ Vagrant::Config.run do |config|
   config.vm.box_url = "http://files.vagrantup.com/precise32.box"
 
   config.vm.customize ["modifyvm", :id,
-                       "--name", "Autotool Autoconfigured" ,
+                       "--name", "Autotool Autoconfigured " + Time.now.to_s,
                        "--memory", "768"]
 
-  config.vm.forward_port 80, 8080
+  config.vm.forward_port 80, 8080, :auto => true
 
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "manifests"
