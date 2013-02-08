@@ -11,6 +11,7 @@ class init {
   include haskell
   include git
   include autotool
+  include emacs
 
   exec { 'apt-get update':
     command => "/usr/bin/apt-get update --fix-missing",
@@ -18,7 +19,8 @@ class init {
                 Class["mysql"],
                 Class["haskell"],
                 Class["git"],
-                Class["autotool"] ],
+                Class["autotool"],
+                Class["emacs"] ],
   }
 
   package { 'make':
