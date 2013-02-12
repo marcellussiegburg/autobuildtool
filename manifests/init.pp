@@ -2,6 +2,7 @@
 Exec {
   path => [ "/bin/", "/sbin/" , "/usr/bin/", "/usr/sbin/", "/usr/local/sbin/", "/usr/local/bin/" ],
   environment => "HOME=/home/vagrant",
+  user => "vagrant",
   timeout => 0,
 }
 
@@ -14,7 +15,7 @@ class init {
   include emacs
 
   exec { 'apt-get update':
-    command => "/usr/bin/apt-get update --fix-missing",
+    command => "sudo /usr/bin/apt-get update --fix-missing",
     before => [ Class["apache"],
                 Class["mysql"],
                 Class["haskell"],

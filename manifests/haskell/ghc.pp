@@ -8,7 +8,7 @@ class haskell::ghc {
     command => "wget http://www.haskell.org/ghc/dist/${version}/${versionname}-${architecture}-unknown-linux.tar.bz2",
     user => "vagrant",
     cwd => "/home/vagrant",
-    unless => "test \"`ghc --version | awk '{print $NF}'`\" = ${version}",
+    unless => "test `ghc --version | awk '{print \$NF}'` = ${version}",
   }
   
   exec { 'ghc extract':

@@ -7,5 +7,6 @@ class haskell {
     command => "cabal update",
     cwd => "/home/vagrant/",
     require => [ Class["ghc"], Class["cabal"] ],
+    user => "vagrant",
   }
 }

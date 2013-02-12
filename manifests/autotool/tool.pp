@@ -3,14 +3,13 @@ class autotool::tool {
   exec { 'git-clone':
     command => "git clone git://autolat.imn.htwk-leipzig.de/git/tool /home/vagrant/tool",
     user => "vagrant",
-    cwd => "/vagrant",
+    cwd => "/home/vagrant",
     unless => "test -d /home/vagrant/tool",
     require => Class["autotool::autolib"],
   }
   
   exec { 'checkout':
     command => "git checkout -f remotes/origin/classic-via-rpc",
-    user => "vagrant",
     cwd => "/home/vagrant/tool",
     require => Exec["git-clone"],
     onlyif => "test -d /home/vagrant/tool",
@@ -22,6 +21,16 @@ class autotool::tool {
     require => Exec["checkout"],
     onlyif => "test -d /home/vagrant/tool",
     unless => "cabal list --installed --simple-output | grep autotool-interface",
+  }
+
+  file { '/home/vagrant/tool/collection/dist':
+    name => "/home/vagrant/tool/collection/dist",
+    ensure => directory,
+    group => "vagrant",
+    owner => "vagrant",
+    recurse => true,
+    require => Exec["checkout"],
+    before => Exec["collection"],
   }
   
   exec { 'collection':
@@ -67,13 +76,22 @@ class autotool::tool {
     onlyif => "test -d /home/vagrant/tool",
     unless => "cabal list --installed --simple-output | grep autotool-server-interface",
   }
+  
+  file { 'Config.hs link':
+    ensure => link,
+    name => "/home/vagrant/tool/server-implementation/src/Config.hs",
+    target => "/home/vagrant/tool/server-implementation/src/Config.hs.sample",
+    require => Exec["checkout"],
+  }
 
   exec { 'server-implementation':
     command => "cabal install",
     cwd => "/home/vagrant/tool/server-implementation",
-    require => Exec["collection"],
+    require => [ Exec["collection"],
+                 Exec["server-interface"],
+                 File["Config.hs link"] ],
     onlyif => "test -d /home/vagrant/tool",
-    unless => "cabal list --installed --simple-output | grep autotool-server-implementation",
+    unless => "test -x /home/vagrant/.cabal/bin/autotool.cgi",
   }
 
   exec { 'client':

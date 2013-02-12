@@ -59,6 +59,7 @@ class haskell::cabal {
   exec { 'cabal-install bootstrap':
     command => "sh /home/vagrant/cabal/cabal-install/bootstrap.sh",
     cwd => "/home/vagrant/cabal/cabal-install",
+    user => "vagrant",
     require => Exec["cabal git checkout"],
     onlyif => "test -d /home/vagrant/cabal",
   }
