@@ -66,7 +66,7 @@ Note: If you choose to use the 64-bit system instead you may have to use
 
 
 #### 6. Additional information ####
-By default the script is configured to use the 32-bit precise edition of the vagrant box. You are able to use the 64-bit precise edition instead by replacing "precise32" by "precise64" in the file Vagrantfile before you create the machine by using "vagrant up".
+By default the script is configured to use the 64-bit precise edition of the vagrant box. It might be possible that your machine is not starting because your machine does not support 64-bit guests. It might be a missing setting in your BIOS. However you are able to use the 32-bit precise edition instead by renaming your current Vagrantfile and afterwards renaming the file Vagrantfile-i386 to Vagrantfile before you create the machine by using "vagrant up".
 
 You may use any other Ubuntu vagrant box, if you like to do so, in order to use this as your base for the autotool setup. You just need to modify the file Vagrantfile according to your needs.
 Please note that the script does not support other vagrant boxes than Ubuntu. Although it might work with some other virtual machines as well it is unlikely and was not tested.
