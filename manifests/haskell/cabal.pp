@@ -10,7 +10,7 @@ class haskell::cabal {
     command => "git clone git://github.com/haskell/cabal.git",
     user => "vagrant",
     cwd => "/home/vagrant",
-    require => [ Class["ghc"],
+    require => [ Class["haskell::ghc"],
                  Class["git"] ],
     onlyif => "test ! -d /home/vagrant/cabal",
     unless => [ "test \"`cabal --version | tail -1 | awk '{print \$3}' | awk '${awk}'`\" = ${version}",

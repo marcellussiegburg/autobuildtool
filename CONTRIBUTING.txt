@@ -27,3 +27,4 @@ puppet:
  > wrong decision: use haskell-platform
  - version of ghc used by haskell-platform is to old
 --> DECISION: pull ghc and cabal from repository and compile it using puppet
+ - use `uname -i` for detecting hardwaremodel type in order to download and install the required version of ghc 

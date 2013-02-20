@@ -6,7 +6,7 @@ class haskell {
   exec { 'cabal update':
     command => "cabal update",
     cwd => "/home/vagrant/",
-    require => [ Class["ghc"], Class["cabal"] ],
+    require => [ Class["haskell::ghc"], Class["haskell::cabal"] ],
     user => "vagrant",
   }
 }

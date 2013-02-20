@@ -1,5 +1,7 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
 class autotool::tool {
+  include autotool::autolib
+  
   exec { 'git-clone':
     command => "git clone git://autolat.imn.htwk-leipzig.de/git/tool /home/vagrant/tool",
     user => "vagrant",

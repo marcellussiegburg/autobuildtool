@@ -2,21 +2,21 @@
 class haskell::ghc {
   $version = "7.6.1"
   $versionname = "ghc-${version}"
-#  $architecture is a fact (i386 or x86_64)
+  $hardwaremodel = inline_template("<%= %x{uname -i | tr -d '\n'} %>") # (either i386 or x86_64)
   
   exec { 'ghc download':
-    command => "wget http://www.haskell.org/ghc/dist/${version}/${versionname}-${architecture}-unknown-linux.tar.bz2",
+    command => "wget http://www.haskell.org/ghc/dist/${version}/${versionname}-${hardwaremodel}-unknown-linux.tar.bz2",
     user => "vagrant",
     cwd => "/home/vagrant",
     unless => "test `ghc --version | awk '{print \$NF}'` = ${version}",
   }
   
   exec { 'ghc extract':
-    command => "tar -xf ${versionname}-${architecture}-unknown-linux.tar.bz2",
+    command => "tar -xf ${versionname}-${hardwaremodel}-unknown-linux.tar.bz2",
     user => "vagrant",
     cwd => "/home/vagrant",
     require => Exec["ghc download"],
-    onlyif => "test -f /home/vagrant/${versionname}-${architecture}-unknown-linux.tar.bz2",
+    onlyif => "test -f /home/vagrant/${versionname}-${hardwaremodel}-unknown-linux.tar.bz2",
   }
 
   package { 'libgmp3':

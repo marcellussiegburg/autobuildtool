@@ -15,8 +15,8 @@ class autotool {
   package { 'happy':
     name => "happy",
     ensure => latest,
-    before => [ Class["tool"],
-                Class["autolib"] ],
+    before => [ Class["autotool::tool"],
+                Class["autotool::autolib"] ],
     require => [ Class["haskell"],
                  Class["git"] ],
   }

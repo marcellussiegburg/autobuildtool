@@ -27,6 +27,7 @@ class init {
   package { 'make':
     name => "make",
     ensure => latest,
+    require => Exec["apt-get update"],
     before => [ Class["haskell"],
                 Class["autotool"] ],
   }
