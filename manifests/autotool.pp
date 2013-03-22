@@ -2,6 +2,7 @@
 Exec {
   path => [ "/bin/", "/sbin/" , "/usr/bin/", "/usr/sbin/", "/usr/local/sbin/", "/usr/local/bin/" ],
   environment => "HOME=/home/vagrant",
+  logoutput => on_failure,
   user => "vagrant",
   timeout => 0,
 }

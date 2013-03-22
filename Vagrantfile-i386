@@ -15,8 +15,11 @@ Vagrant::Config.run do |config|
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "manifests"
     puppet.manifest_file  = "init.pp"
-    puppet.options = ["--user", "vagrant"]
+    puppet.options = ["--user", "vagrant",
+                      "--no-daemonize",
+                      "--detailed-exitcodes",
+                      "--verbose",
+                      "--logdest", "console",
+                      "--logdest", "/vagrant/build.log"]
   end
-
-  #config.vm.provision :puppet, :module_path => "manifests/autotool"
 end

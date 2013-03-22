@@ -70,3 +70,5 @@ By default the script is configured to use the 64-bit precise edition of the vag
 
 You may use any other Ubuntu vagrant box, if you like to do so, in order to use this as your base for the autotool setup. You just need to modify the file Vagrantfile according to your needs.
 Please note that the script does not support other vagrant boxes than Ubuntu. Although it might work with some other virtual machines as well it is unlikely and was not tested.
+
+The main steps of the build process of the whole machine will be shown in the terminal, on errors the full log of the failed operation will be shown. You can also find these information in the file build.log, where the whole log will be put in as well.
