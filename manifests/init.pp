@@ -14,6 +14,7 @@ class init {
   include git
   include autotool
   include emacs
+  include test
 
   exec { 'apt-get update':
     command => "sudo /usr/bin/apt-get update --fix-missing",
@@ -44,6 +45,13 @@ class init {
                 Class["haskell"],
                 Class["git"],
                 Class["autotool"] ],
+  }
+
+  package { 'w3m':
+    name => "w3m",
+    ensure => latest,
+    require => Exec["apt-get update"],
+    before => Class["test"],
   }
 }
 
