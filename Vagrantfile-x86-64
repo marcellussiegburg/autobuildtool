@@ -8,7 +8,7 @@ Vagrant::Config.run do |config|
 
   config.vm.customize ["modifyvm", :id,
                        "--name", "Autotool Autoconfigured " + Time.now.to_s,
-                       "--memory", "2000"]
+                       "--memory", "2100"]
 
   config.vm.forward_port 80, 8080, :auto => true
 
