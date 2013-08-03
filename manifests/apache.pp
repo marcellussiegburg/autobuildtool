@@ -19,7 +19,7 @@ class apache {
   file { 'autotool.cgi':
     name => "/usr/lib/cgi-bin/autotool.cgi",
     ensure => file,
-    require => [ Class["autotool"],
+    require => [ Class["autotool::tool"],
                  Package["apache2"] ],
     source => "/home/vagrant/.cabal/bin/autotool.cgi",
   }
@@ -27,7 +27,7 @@ class apache {
   file { 'Super.cgi':
     name => "/usr/lib/cgi-bin/Super.cgi",
     ensure => file,
-    require => [ Class["autotool"],
+    require => [ Class["autotool::tool"],
                  Package["apache2"] ],
     source => "/home/vagrant/.cabal/bin/autotool-Super",
   }
