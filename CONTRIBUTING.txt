@@ -29,3 +29,4 @@ puppet:
 --> DECISION: pull ghc and cabal from repository and compile it using puppet
  - use `uname -i` for detecting hardwaremodel type in order to download and install the required version of ghc
  - enable logging and put logs into build.log
+ - database is configured with standard user based on the documentation of autotool

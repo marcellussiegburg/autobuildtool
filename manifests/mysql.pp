@@ -40,4 +40,25 @@ class mysql {
                  Exec["Create Database"] ],
     unless => "echo 'use autoan; show tables;' | mysql -u root | grep ^aufgabe\$",
   }
+
+  exec { 'Insert uni':
+    command => "echo \"use autoan; insert into schule (UNr, name, mail_suffix) values (0, 'testing', '');\" | mysql -u user -ppasswort",
+    user => root,
+    require => Exec["Create Tables"],
+    unless => "echo 'use autoan; select * from schule;' | mysql -u root | grep testing",
+  }
+
+  exec { 'Insert student':
+    command => "echo \"use autoan; insert into student (SNr, MNr, Name, Vorname, Status, UNr) values (0, '0', 'Mustermann', 'Max', 'aktiv', '0');\" | mysql -u user -ppasswort",
+    user => root,
+    require => Exec["Create Tables"],
+    unless => "echo 'use autoan; select * from student;' | mysql -u root | grep Mustermann",
+  }
+
+  exec { 'Insert direktor':
+    command => "echo 'use autoan; insert into direktor values (1,0);' | mysql -u user -ppasswort",
+    user => root,
+    require => Exec["Create Tables"],
+    unless => "echo 'use autoan; select * from direktor;' | mysql -u root | grep 0",
+  }
 }
