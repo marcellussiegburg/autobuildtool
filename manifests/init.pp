@@ -7,6 +7,14 @@ Exec {
   timeout => 0,
 }
 
+stage { 'test':
+  require => Stage["main"],
+}
+
+class { 'test':
+  stage => "test",
+}
+
 class init {
   include apache
   include mysql
@@ -14,7 +22,6 @@ class init {
   include git
   include autotool
   include emacs
-  include test
 
   exec { 'apt-get update':
     command => "sudo /usr/bin/apt-get update --fix-missing",
@@ -56,3 +63,4 @@ class init {
 }
 
 include init
+include test

@@ -1,13 +1,31 @@
-class test {  
-  exec { 'Test 1 passed: Page is running':
-    command => "echo 'Test 1 passed'",
-    onlyif => "test `w3m http://localhost/cgi-bin/Super.cgi -dump -T text/html | grep autotool` != \"\"",
-    require => Class["apache"],
-  }
+###  (c) Marcellus Siegburg, 2013, License: GPL
+class test {
+  $test1 = "w3m http://localhost/cgi-bin/Super.cgi -dump -T text/html | grep autotool"
+  $test1a = "w3m http://localhost/cgi-bin/Super.cgi -dump -T text/html | grep 'Not Found'"
 
-  exec { 'Test 1 failed: Super.cgi is not available':
-    command => "echo 'Test 1 failed'",
-    onlyif => "test `w3m http://localhost/cgi-bin/Super2.cgi -dump -T text/html | grep 'Not Found'` != \"\"",
-    require => Class["apache"],
+  define testcase($command, $success = "", $failure = "", $unless = "test 1 -eq 2") {
+    exec { "${title} pass: ${success}":
+      command => "echo '${title} pass: ${success}'",
+      onlyif => "${command}",
+      logoutput => true,
+    }
+    exec { "${title} fail: ${failure}":
+      command => "echo '${title} pass: ${failure}'",
+      onlyif => "bash -c 't=\"bash -c ${command}\"; test $? -ne 0'",
+      logoutput => true,
+    }
+  }
+    
+  testcase { "Test 1":
+    command => $test1,
+    success => "Page is running.",
+    failure => "Page is not running.",
+  }
+  
+  testcase { "Test 1a":
+    command => $test1a,
+    success => "Super.cgi is not available.",
+    failure => "Page is not running. Maybe it changed? - Reviewing this test case might be required.",
+    unless => $test1,
   }
 }
