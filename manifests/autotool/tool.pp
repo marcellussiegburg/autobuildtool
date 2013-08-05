@@ -96,12 +96,22 @@ class autotool::tool {
     unless => "test -x /home/vagrant/.cabal/bin/autotool.cgi",
   }
 
-  # exec { 'client':
-  #   command => "cabal install",
-  #   cwd => "/home/vagrant/tool/client",
-  #   require => Exec["checkout"],
-  #   onlyif => "test -d /home/vagrant/tool",
-  #   unless => "cabal list --installed --simple-output | grep autotool-client",
-  # }
+  exec { 'Prepare client':
+    command => ["sed 's/\\-\\- autotool-server/autotool-server-interface/' autotool-client.cabal > tmp.cabal; cat tmp.cabal > autotool-client.cabal; rm tmp.cabal"],
+    cwd => "/home/vagrant/tool/client",
+    require => Exec["checkout"],
+    onlyif => "test -d /home/vagrant/tool",
+    unless => "cabal list --installed --simple-output | grep autolat-client",
+  }
+  
+  exec { 'client':
+    command => "cabal install",
+    cwd => "/home/vagrant/tool/client",
+    require => [ Exec["checkout"],
+                 Exec["server-interface"],
+                 Exec["Prepare client"] ],
+    onlyif => "test -d /home/vagrant/tool",
+    unless => "cabal list --installed --simple-output | grep autolat-client",
+  }
   
 }
