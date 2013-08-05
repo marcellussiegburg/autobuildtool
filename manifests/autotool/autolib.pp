@@ -16,12 +16,10 @@ class autotool::autolib {
     unless => "cabal list --installed --simple-output | grep autolib"
   }
 
-  exec { 'autolib-cgi':
-    command => "cabal install",
+  cabalinstall { 'autolib-cgi':
     cwd => "/home/vagrant/autolib/cgi",
     require => Exec["checkout autolib"],
     onlyif => "test -d /home/vagrant/autolib",
-    unless => "cabal list --installed --simple-output | grep autolib-cgi",
   }
   
   exec { 'forauto autolib':

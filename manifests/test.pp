@@ -3,7 +3,7 @@ class test {
   $test1 = "w3m http://localhost/cgi-bin/Super.cgi -dump -T text/html | grep autotool"
   $test1a = "w3m http://localhost/cgi-bin/Super.cgi -dump -T text/html | grep 'Not Found'"
 
-  define testcase($command, $success = "", $failure = "", $unless = "test 1 -eq 2") {
+  define testcase($command, $success = "", $failure = "", $unless = undef) {
     exec { "${title} pass: ${success}":
       command => "echo '${title} pass: ${success}'",
       onlyif => "${command}",

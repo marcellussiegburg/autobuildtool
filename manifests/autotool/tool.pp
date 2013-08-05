@@ -17,12 +17,11 @@ class autotool::tool {
     onlyif => "test -d /home/vagrant/tool",
   }
   
-  exec { 'interface':
-    command => "cabal install",
+  cabalinstall { 'interface':
+    name => "autotool-interface",
     cwd => "/home/vagrant/tool/interface",
     require => Exec["checkout"],
     onlyif => "test -d /home/vagrant/tool",
-    unless => "cabal list --installed --simple-output | grep autotool-interface",
   }
 
   file { '/home/vagrant/tool/collection/dist':
@@ -32,15 +31,14 @@ class autotool::tool {
     owner => "vagrant",
     recurse => true,
     require => Exec["checkout"],
-    before => Exec["collection"],
+    before => Cabalinstall["collection"],
   }
   
-  exec { 'collection':
-    command => "cabal install",
+  cabalinstall { 'collection':
+    name => "autotool-collection",
     cwd => "/home/vagrant/tool/collection",
-    require => Exec["interface"],
+    require => Cabalinstall["interface"],
     onlyif => "test -d /home/vagrant/tool",
-    unless => "cabal list --installed --simple-output | grep autotool-collection",
   }
   
   file { 'Mysqlconnect.hs link':
@@ -50,33 +48,30 @@ class autotool::tool {
     require => Exec["checkout"],
   }
   
-  exec { 'db':
-    command => "cabal install",
-    require => [ Exec["interface"],
-                 Exec["collection"],
-                 Exec["server-interface"],
-                 File["Mysqlconnect.hs link"] ],
+  cabalinstall { 'db':
+    name => "autotool-db",
     cwd => "/home/vagrant/tool/db",
+    require => [ Cabalinstall["interface"],
+                 Cabalinstall["collection"],
+                 Cabalinstall["server-interface"],
+                 File["Mysqlconnect.hs link"] ],
     onlyif => "test -d /home/vagrant/tool",
-    unless => "cabal list --installed --simple-output | grep autotool-db",
   }
 
-  # exec { 'test':
-  #   command => "cabal install",
+  # cabalinstall { 'test':
+  #   name => "autotool-test",
   #   cwd => "/home/vagrant/tool/test",
-  #   require => [ Exec["collection"],
-  #                Exec["interface"],
-  #                Exec["db"]],
+  #   require => [ Cabalinstall["collection"],
+  #                Cabalinstall["interface"],
+  #                Cabalinstall["db"]],
   #   onlyif => "test -d /home/vagrant/tool",
-  #   unless => "cabal list --installed --simple-output | grep autotool-test",
   # }
 
-  exec { 'server-interface':
-    command => "cabal install",
+  cabalinstall { 'server-interface':
+    name => "autotool-server-interface",
     cwd => "/home/vagrant/tool/server-interface",
-    require => Exec["interface"],
+    require => Cabalinstall["interface"],
     onlyif => "test -d /home/vagrant/tool",
-    unless => "cabal list --installed --simple-output | grep autotool-server-interface",
   }
   
   file { 'Config.hs link':
@@ -89,8 +84,8 @@ class autotool::tool {
   exec { 'server-implementation':
     command => "cabal install",
     cwd => "/home/vagrant/tool/server-implementation",
-    require => [ Exec["collection"],
-                 Exec["server-interface"],
+    require => [ Cabalinstall["collection"],
+                 Cabalinstall["server-interface"],
                  File["Config.hs link"] ],
     onlyif => "test -d /home/vagrant/tool",
     unless => "test -x /home/vagrant/.cabal/bin/autotool.cgi",
@@ -104,14 +99,14 @@ class autotool::tool {
     unless => "cabal list --installed --simple-output | grep autolat-client",
   }
   
-  exec { 'client':
-    command => "cabal install",
+  cabalinstall { 'client':
+    name => "autolat-client",
     cwd => "/home/vagrant/tool/client",
+    file => "$cwd/autotool-client.cabal",
     require => [ Exec["checkout"],
-                 Exec["server-interface"],
+                 Cabalinstall["server-interface"],
                  Exec["Prepare client"] ],
     onlyif => "test -d /home/vagrant/tool",
-    unless => "cabal list --installed --simple-output | grep autolat-client",
   }
   
 }
