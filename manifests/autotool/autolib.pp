@@ -13,7 +13,15 @@ class autotool::autolib {
     cwd => "/home/vagrant/autolib",
     user => "vagrant",
     require => Exec["git clone autolib"],
-    unless => "cabal list --installed --simple-output | grep autolib"
+    unless => "cabal list --installed --simple-output | grep autolib-util",
+  }
+  
+  exec { 'git fetch autolib':
+    command => "git fetch",
+    cwd => "/home/vagrant/autolib",
+    user => "vagrant",
+    require => Exec["git clone autolib"],
+    before => Exec["checkout autolib"],
   }
 
   cabalinstall { 'autolib-cgi':
@@ -26,6 +34,6 @@ class autotool::autolib {
     command => "/home/vagrant/autolib/forauto cabal install",
     cwd => "/home/vagrant/autolib",
     require => Exec["checkout autolib"],
-    unless => "cabal list --installed --simple-output | grep autolib-util"
+    unless => "cabal list --installed --simple-output | grep autolib-util",
   }
 }

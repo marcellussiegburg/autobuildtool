@@ -17,6 +17,13 @@ class autotool::tool {
     onlyif => "test -d /home/vagrant/tool",
   }
   
+  exec { 'git fetch tool':
+    command => "git fetch",
+    cwd => "/home/vagrant/tool",
+    require => Exec["git-clone"],
+    before => Exec["checkout"],
+  }
+  
   cabalinstall { 'interface':
     name => "autotool-interface",
     cwd => "/home/vagrant/tool/interface",
