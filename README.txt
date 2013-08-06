@@ -34,6 +34,12 @@ This may take a while, depending on your computer it might take some hours.
 When it is completed a new virtual machine is created and running. You can interact with the machine using.
    > vagrant ssh
 
+While you interact with the machine via ssh you can use w3m to access the autotool website using the following command:
+
+   > w3m http://localhost/cgi-bin/Super.cgi
+
+You can also access the website on your host system in the browser of your choice via "http://localhost:8080/cgi-bin/Super.cgi".
+Please note that the port number (8080) may vary if your host system was using this port number while you executed "vagrant up". "vagrant up" is telling the port number to use at the beginning of its execution. (You can read the information later in you build.log)
 
 #### 4. A break ####
 When you think it is time for a break, you have got two options:
