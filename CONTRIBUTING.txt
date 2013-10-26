@@ -30,3 +30,9 @@ puppet:
  - use `uname -i` for detecting hardwaremodel type in order to download and install the required version of ghc
  - enable logging and put logs into build.log
  - database is configured with standard user based on the documentation of autotool
+ - refactoring: replaced forauto by many cabalinstall resource types
+   - advantages:
+     - only dependencies are build (it this does not change anything at the moment, tho)
+     - on error more than just one cabal package might be built (more errors might be visible in the log file)
+   - disadvantage:
+     - manifests/autotool/autolib.pp needs to be updated if dependencies change in autolib cabal packages
