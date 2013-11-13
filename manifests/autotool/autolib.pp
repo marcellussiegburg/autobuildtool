@@ -2,38 +2,40 @@ class autotool::autolib {
   include apache
 
   exec { 'git clone autolib':
-    command => "git clone git://autolat.imn.htwk-leipzig.de/git/autolib /home/vagrant/autolib",
-    cwd => "/vagrant",
-    user => "vagrant",
-    unless => "test -d /home/vagrant/autolib",
+    command => 'git clone git://autolat.imn.htwk-leipzig.de/git/autolib /home/vagrant/autolib',
+    cwd => '/vagrant',
+    user => 'vagrant',
+    unless => 'test -d /home/vagrant/autolib',
   }
   
   exec { 'checkout autolib':
-    command => "git checkout remotes/origin/release",
-    cwd => "/home/vagrant/autolib",
-    user => "vagrant",
-    require => Exec["git clone autolib"],
-    unless => "cabal list --installed --simple-output | grep autolib-lib",
+    command => 'git checkout remotes/origin/release',
+    cwd => '/home/vagrant/autolib',
+    user => 'vagrant',
+    require => Exec['git clone autolib'],
+    unless => 'cabal list --installed --simple-output | grep "autolib "',
   }
   
   exec { 'git fetch autolib':
-    command => "git fetch",
-    cwd => "/home/vagrant/autolib",
-    user => "vagrant",
-    require => Exec["git clone autolib"],
-    before => Exec["checkout autolib"],
+    command => 'git fetch',
+    cwd => '/home/vagrant/autolib',
+    user => 'vagrant',
+    require => Exec['git clone autolib'],
+    before => Exec['checkout autolib'],
   }
 
   cabalinstall { 'autolib-cgi':
-    cwd => "/home/vagrant/autolib/cgi",
-    require => Exec["checkout autolib"],
-    onlyif => "test -d /home/vagrant/autolib",
+    cwd => '/home/vagrant/autolib/cgi',
+    require => Exec['checkout autolib'],
+    onlyif => 'test -d /home/vagrant/autolib',
+    unless => 'cabal list --installed --simple-output | grep autolib-cgi',
   }
   
   cabalinstall { 'autolib-derive':
     cwd     => '/home/vagrant/autolib/derive',
     require => Exec['checkout autolib'],
     onlyif  => 'test -d /home/vagrant/autolib/derive',
+    unless => 'cabal list --installed --simple-output | grep autolib-derive',
   }
 
   cabalinstall { 'autolib-todoc':
@@ -42,6 +44,7 @@ class autotool::autolib {
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-derive'] ],
     onlyif  => 'test -d /home/vagrant/autolib/todoc',
+    unless => 'cabal list --installed --simple-output | grep autolib-todoc',
   }
 
   cabalinstall { 'autolib-reader':
@@ -51,6 +54,7 @@ class autotool::autolib {
         Cabalinstall['autolib-derive'],
         Cabalinstall['autolib-todoc'] ],
     onlyif  => 'test -d /home/vagrant/autolib/reader',
+    unless => 'cabal list --installed --simple-output | grep autolib-reader',
   }
 
   cabalinstall { 'autolib-data':
@@ -60,6 +64,7 @@ class autotool::autolib {
         Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'] ],
     onlyif  => 'test -d /home/vagrant/autolib/data',
+    unless => 'cabal list --installed --simple-output | grep autolib-data',
   }
 
   cabalinstall { 'autolib-util':
@@ -70,6 +75,7 @@ class autotool::autolib {
         Cabalinstall['autolib-reader'],
         Cabalinstall['autolib-data'] ],
     onlyif  => 'test -d /home/vagrant/autolib/util',
+    unless => 'cabal list --installed --simple-output | grep autolib-util',
   }
 
   cabalinstall { 'autolib-output':
@@ -78,6 +84,7 @@ class autotool::autolib {
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-todoc'] ],
     onlyif  => 'test -d /home/vagrant/autolib/output',
+    unless => 'cabal list --installed --simple-output | grep autolib-output',
   }
 
   cabalinstall { 'autolib-reporter':
@@ -89,6 +96,7 @@ class autotool::autolib {
         Cabalinstall['autolib-data'],
         Cabalinstall['autolib-output'] ],
     onlyif  => 'test -d /home/vagrant/autolib/reporter',
+    unless => 'cabal list --installed --simple-output | grep autolib-reporter',
   }
  
   cabalinstall { 'autolib-dot':
@@ -102,6 +110,7 @@ class autotool::autolib {
         Cabalinstall['autolib-output'],
         Cabalinstall['autolib-reporter'] ],
     onlyif  => 'test -d /home/vagrant/autolib/dot',
+    unless => 'cabal list --installed --simple-output | grep autolib-dot',
   }
 
   cabalinstall { 'autolib-algorithm':
@@ -110,6 +119,7 @@ class autotool::autolib {
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-data'] ],
     onlyif  => 'test -d /home/vagrant/autolib/algorithm',
+    unless => 'cabal list --installed --simple-output | grep autolib-algorithm',
   }
 
   cabalinstall { 'autolib-relation':
@@ -122,6 +132,7 @@ class autotool::autolib {
         Cabalinstall['autolib-util'],
         Cabalinstall['autolib-algorithm'] ],
     onlyif  => 'test -d /home/vagrant/autolib/relation',
+    unless => 'cabal list --installed --simple-output | grep autolib-relation',
   }
 
   cabalinstall { 'autolib-fa':
@@ -136,6 +147,7 @@ class autotool::autolib {
         Cabalinstall['autolib-reporter'],
         Cabalinstall['autolib-relation'] ],
     onlyif  => 'test -d /home/vagrant/autolib/fa',
+    unless => 'cabal list --installed --simple-output | grep autolib-fa',
   }
 
   cabalinstall { 'autolib-genetic':
@@ -146,6 +158,7 @@ class autotool::autolib {
         Cabalinstall['autolib-data'],
         Cabalinstall['autolib-util'] ],
     onlyif  => 'test -d /home/vagrant/autolib/genetic',
+    unless => 'cabal list --installed --simple-output | grep autolib-genetic',
   }
 
   cabalinstall { 'autolib-tex':
@@ -154,6 +167,7 @@ class autotool::autolib {
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-todoc'] ],
     onlyif  => 'test -d /home/vagrant/autolib/tex',
+    unless => 'cabal list --installed --simple-output | grep autolib-tex',
   }
 
   cabalinstall { 'autolib-rewriting':
@@ -169,6 +183,7 @@ class autotool::autolib {
         Cabalinstall['autolib-relation'],
         Cabalinstall['autolib-tex'] ],
     onlyif  => 'test -d /home/vagrant/autolib/rewriting',
+    unless => 'cabal list --installed --simple-output | grep autolib-rewriting',
   }
 
   cabalinstall { 'autolib-transport':
@@ -177,6 +192,7 @@ class autotool::autolib {
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-derive'] ],
     onlyif  => 'test -d /home/vagrant/autolib/transport',
+    unless => 'cabal list --installed --simple-output | grep autolib-transport',
   }
 
   cabalinstall { 'autolib-graph':
@@ -190,6 +206,7 @@ class autotool::autolib {
         Cabalinstall['autolib-dot'],
         Cabalinstall['autolib-transport'] ],
     onlyif  => 'test -d /home/vagrant/autolib/graph',
+    unless => 'cabal list --installed --simple-output | grep autolib-graph',
   }
 
   cabalinstall { 'autolib-exp':
@@ -202,6 +219,7 @@ class autotool::autolib {
         Cabalinstall['autolib-fa'],
         Cabalinstall['autolib-reporter'] ],
     onlyif  => 'test -d /home/vagrant/autolib/exp',
+    unless => 'cabal list --installed --simple-output | grep autolib-exp',
   }
 
   cabalinstall { 'autolib-fta':
@@ -218,6 +236,7 @@ class autotool::autolib {
         Cabalinstall['autolib-algorithm'],
         Cabalinstall['autolib-dot'] ],
     onlyif  => 'test -d /home/vagrant/autolib/fta',
+    unless => 'cabal list --installed --simple-output | grep autolib-fta',
   }
 
   cabalinstall { 'autolib-foa':
@@ -235,6 +254,7 @@ class autotool::autolib {
         Cabalinstall['autolib-exp'],
         Cabalinstall['autolib-dot'] ],
     onlyif  => 'test -d /home/vagrant/autolib/foa',
+    unless => 'cabal list --installed --simple-output | grep autolib-foe',
   }
 
   cabalinstall { 'autolib-logic':
@@ -246,6 +266,7 @@ class autotool::autolib {
         Cabalinstall['autolib-util'],
         Cabalinstall['autolib-fa'] ],
     onlyif  => 'test -d /home/vagrant/autolib/logic',
+    unless => 'cabal list --installed --simple-output | grep autolib-logic',
   }
 
   cabalinstall { 'autolib-lib':
@@ -270,5 +291,6 @@ class autotool::autolib {
         Cabalinstall['autolib-genetic'],
         Cabalinstall['autolib-dot'] ],
     onlyif  => 'test -d /home/vagrant/autolib/lib',
+    unless => 'cabal list --installed --simple-output | grep "autolib "',
   }
 }
