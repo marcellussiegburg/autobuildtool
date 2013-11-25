@@ -1,5 +1,5 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
-define cabalinstall ($cwd, $onlyif = undef, $file = "$cwd/${name}.cabal", $unless = undef) {
+define cabalinstall ($cwd, $onlyif = undef, $file = "${cwd}/${name}.cabal", $unless = undef) {
   ### If $unless is undefined, assume that the package is installed in the following way:
     ## Extract the Version number of the installed package found in ghc-pkg
     ## Compare it to the number in the .cabal file
@@ -10,7 +10,7 @@ define cabalinstall ($cwd, $onlyif = undef, $file = "$cwd/${name}.cabal", $unles
   $version = "${filter} | cut -d'-' -f${split}"
 
   if ($unless == undef) {
-    $unl = "bash -c \"grep '^Version' ${file} | grep ' '\$(${version})'\$'\""
+    $unl = "bash -Ec \"grep '^Version' ${file} | grep ' '\$(${version})'\$'\""
   } else {
     $unl = $unless
   }

@@ -10,18 +10,18 @@ class autotool::tool {
     require => Class["autotool::autolib"],
   }
   
-  exec { 'checkout':
-    command => "git checkout -f remotes/origin/classic-via-rpc",
-    cwd => "/home/vagrant/tool",
-    require => Exec["git-clone"],
-    onlyif => "test -d /home/vagrant/tool",
-  }
-  
   exec { 'git fetch tool':
     command => "git fetch",
     cwd => "/home/vagrant/tool",
     require => Exec["git-clone"],
     before => Exec["checkout"],
+  }
+  
+  exec { 'checkout':
+    command => "git checkout -f remotes/origin/classic-via-rpc",
+    cwd => "/home/vagrant/tool",
+    require => Exec["git-clone"],
+    onlyif => "test -d /home/vagrant/tool",
   }
   
   cabalinstall { 'interface':
@@ -103,7 +103,6 @@ class autotool::tool {
     cwd => "/home/vagrant/tool/client",
     require => Exec["checkout"],
     onlyif => "test -d /home/vagrant/tool",
-    unless => "cabal list --installed --simple-output | grep autolat-client",
   }
   
   cabalinstall { 'client':

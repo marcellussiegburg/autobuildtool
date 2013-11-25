@@ -254,7 +254,7 @@ class autotool::autolib {
         Cabalinstall['autolib-exp'],
         Cabalinstall['autolib-dot'] ],
     onlyif  => 'test -d /home/vagrant/autolib/foa',
-    unless => 'cabal list --installed --simple-output | grep autolib-foe',
+    unless => 'cabal list --installed --simple-output | grep autolib-foa',
   }
 
   cabalinstall { 'autolib-logic':
