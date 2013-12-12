@@ -2,17 +2,19 @@
 # vi: set ft=ruby :
 ###  (c) Marcellus Siegburg, 2013, License: GPL
 
-Vagrant::Config.run do |config|
+Vagrant.configure("2") do |config|
   config.vm.box = "precise64"
   config.vm.box_url = "http://files.vagrantup.com/precise64.box"
 
-  config.vm.customize ["modifyvm", :id,
-                       "--name", "Autotool Autoconfigured " + Time.now.to_s,
-                       "--memory", "2200"]
+  config.vm.provider "virtualbox" do |v|
+    v.name = "Autotool Autoconfigured " + Time.now.to_s
+    v.customize ["modifyvm", :id,
+                 "--memory", "2200"]
+  end
 
-  config.vm.forward_port 80, 8080, :auto => true
+  config.vm.network "forwarded_port", guest: 80, host: 8080, auto_correct: true
 
-  config.vm.provision :puppet do |puppet|
+  config.vm.provision "puppet" do |puppet|
     puppet.manifests_path = "manifests"
     puppet.manifest_file  = "init.pp"
     puppet.options = ["--user", "vagrant",
