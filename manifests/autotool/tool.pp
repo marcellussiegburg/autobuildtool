@@ -55,13 +55,21 @@ class autotool::tool {
     require => Exec["checkout"],
   }
   
+  file { 'Default.hs link':
+    ensure => link,
+    name => "/home/vagrant/tool/db/src/Default.hs",
+    target => "/home/vagrant/tool/db/src/Default.hs.sample",
+    require => Exec["checkout"],
+  }
+
   cabalinstall { 'db':
     name => "autotool-db",
     cwd => "/home/vagrant/tool/db",
     require => [ Cabalinstall["interface"],
                  Cabalinstall["collection"],
                  Cabalinstall["server-interface"],
-                 File["Mysqlconnect.hs link"] ],
+                 File["Mysqlconnect.hs link"],
+                 File["Default.hs link"] ],
     onlyif => "test -d /home/vagrant/tool",
   }
 

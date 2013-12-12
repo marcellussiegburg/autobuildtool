@@ -1,6 +1,6 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
 Exec {
-  path => [ "/bin/", "/sbin/" , "/usr/bin/", "/usr/sbin/", "/usr/local/sbin/", "/usr/local/bin/" ],
+  path => [ "/home/vagrant/.cabal/bin", "/bin/", "/sbin/" , "/usr/bin/", "/usr/sbin/", "/usr/local/sbin/", "/usr/local/bin/" ],
   environment => "HOME=/home/vagrant",
   logoutput => on_failure,
   user => "vagrant",

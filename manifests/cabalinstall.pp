@@ -18,7 +18,7 @@ define cabalinstall ($cwd, $onlyif = undef, $file = "${cwd}/${name}.cabal", $unl
   ### If the Version number has changed
   ## Install the .cabal file
   exec { "cabal install ${title} (${name})":
-    command => "cabal install",
+    command => "cabal install --enable-documentation --haddock-hyperlink-source",
     cwd => $cwd,
     onlyif => $onlyif,
     unless => $unl,
