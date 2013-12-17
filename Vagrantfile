@@ -15,8 +15,9 @@ Vagrant.configure("2") do |config|
   config.vm.network "forwarded_port", guest: 80, host: 8080, auto_correct: true
 
   config.vm.provision "puppet" do |puppet|
+    puppet.module_path = "modules"
     puppet.manifests_path = "manifests"
-    puppet.manifest_file  = "init.pp"
+    puppet.manifest_file = "site.pp"
     puppet.options = ["--user", "vagrant",
                       "--no-daemonize",
                       "--detailed-exitcodes",
