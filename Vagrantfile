@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |v|
     v.name = "Autotool Autoconfigured " + Time.now.to_s
     v.customize ["modifyvm", :id,
-                 "--memory", "2200"]
+                 "--memory", "2300"]
   end
 
   config.vm.network "forwarded_port", guest: 80, host: 8080, auto_correct: true
