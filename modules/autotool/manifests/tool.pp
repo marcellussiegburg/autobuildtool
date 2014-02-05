@@ -1,6 +1,15 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
 class autotool::tool {
   include autotool::autolib
+
+  case $architecture {
+    x86_64: {
+      $lib_dirs = '/usr/lib64/mysql'
+    }
+    default: {
+      $lib_dirs = '/usr/lib/mysql'
+    }
+  }
   
   exec { 'git-clone':
     command => "git clone git://autolat.imn.htwk-leipzig.de/git/tool /home/vagrant/tool",
@@ -65,6 +74,7 @@ class autotool::tool {
   cabalinstall { 'db':
     name => "autotool-db",
     cwd => "/home/vagrant/tool/db",
+    extra_lib_dirs => $lib_dirs,
     require => [ Cabalinstall["interface"],
                  Cabalinstall["collection"],
                  Cabalinstall["server-interface"],

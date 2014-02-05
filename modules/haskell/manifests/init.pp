@@ -10,10 +10,10 @@ class haskell {
     user => "vagrant",
   }
 
-  exec { 'cabal install alex haddock hscolour':
-    command => "cabal install --enable-documentation --haddock-hyperlink-source alex haddock hscolour",
+  exec { 'cabal install happy alex haddock hscolour':
+    command => "cabal install --enable-documentation --haddock-hyperlink-source happy alex haddock hscolour",
     cwd => "/home/vagrant",
     require => [ Exec["cabal update"]],
-    unless => "ghc-pkg list | grep alex && ghc-pkg list | grep haddock && ghc-pkg list | grep hscolour",
+    unless => "ghc-pkg list haddock | grep haddock && ghc-pkg list hscolour | grep hscolour",
   }
 }

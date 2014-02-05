@@ -1,5 +1,18 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
 class haskell::ghc {
+  case $operatingsystem {
+    ubuntu: {
+      $libgmp = 'libgmp3c2'
+      $libgmp_dev = 'libgmp3-dev'
+    }
+    CentOS: {
+      $libgmp = 'gmp'
+      $libgmp_dev = 'gmp-devel'
+    }
+    default: {
+      fail('Unrecognized operating system for libgmp')
+    }
+  }
   $version = "7.6.1"
   $versionname = "ghc-${version}"
   $hardwaremodel = inline_template("<%= %x{uname -i | tr -d '\n'} %>") # (either i386 or x86_64)
@@ -20,12 +33,12 @@ class haskell::ghc {
   }
 
   package { 'libgmp3':
-    name => "libgmp3c2",
+    name => $libgmp,
     ensure => latest,
   }
   
   package { 'libgmp3-dev':
-    name => "libgmp3-dev",
+    name => $libgmp_dev,
     ensure => latest,
     require => Package["libgmp3"],
   }
@@ -39,7 +52,7 @@ class haskell::ghc {
     onlyif => "test -d /home/vagrant/${versionname}",
   }
   
-  exec { 'ghc install':
+  exec { "install ${versionname}":
     command => "sudo make install",
     cwd => "/home/vagrant/${versionname}",
     require => Exec["ghc configure"],
@@ -48,8 +61,8 @@ class haskell::ghc {
   
   exec { "remove /home/vagrant/${versionname}":
     command => "rm -rf /home/vagrant/${versionname}*",
-    cwd => "/home/vagrant/${versionname}",
-    require => Exec["ghc install"],
+    cwd => "/home/vagrant",
+    require => Exec["install ${versionname}"],
     onlyif => "test -d /home/vagrant/${versionname}",
   }
 } 

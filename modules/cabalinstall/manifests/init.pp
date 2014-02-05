@@ -1,5 +1,5 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
-define cabalinstall ($cwd, $onlyif = undef, $file = "${cwd}/${name}.cabal", $unless = undef) {
+define cabalinstall ($cwd, $onlyif = undef, $file = "${cwd}/${name}.cabal", $unless = undef, $extra_lib_dirs = undef) {
   ### If $unless is undefined, assume that the package is installed in the following way:
     ## Extract the Version number of the installed package found in ghc-pkg
     ## Compare it to the number in the .cabal file
@@ -14,11 +14,15 @@ define cabalinstall ($cwd, $onlyif = undef, $file = "${cwd}/${name}.cabal", $unl
   } else {
     $unl = $unless
   }
-
+  if ($extra_lib_dirs == undef) {
+    $libs = ''
+  } else {
+    $libs = "--extra-lib-dirs==${extra_lib_dirs}"
+  }
   ### If the Version number has changed
   ## Install the .cabal file
   exec { "cabal install ${title} (${name})":
-    command => "cabal install --enable-documentation --haddock-hyperlink-source",
+    command => "cabal install --enable-documentation --haddock-hyperlink-source ${lib}",
     cwd => $cwd,
     onlyif => $onlyif,
     unless => $unl,

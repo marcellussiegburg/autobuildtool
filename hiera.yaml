@@ -1,0 +1,6 @@
+---
+:backends: yaml
+:yaml:
+  :datadir: config
+:hierarchy: common
+:logger: console

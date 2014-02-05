@@ -3,8 +3,8 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "precise64"
-  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
+  config.vm.box = "ubuntu-1310-x64"
+  config.vm.box_url = "http://puppet-vagrant-boxes.puppetlabs.com/ubuntu-1310-x64-virtualbox-puppet.box"
 
   config.vm.provider "virtualbox" do |v|
     v.name = "Autotool Autoconfigured " + Time.now.to_s
@@ -18,6 +18,7 @@ Vagrant.configure("2") do |config|
     puppet.module_path = "modules"
     puppet.manifests_path = "manifests"
     puppet.manifest_file = "site.pp"
+    puppet.hiera_config_path = "hiera.yaml"
     puppet.options = ["--user", "vagrant",
                       "--no-daemonize",
                       "--detailed-exitcodes",

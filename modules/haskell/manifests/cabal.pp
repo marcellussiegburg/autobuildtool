@@ -3,7 +3,13 @@ class haskell::cabal {
   include git
   include haskell::ghc
 
-  $version = "1.16"
+  case $operatingsystem {
+    ubuntu: { $zlib_dev = 'zlibc' }
+    CentOS: { $zlib_dev = 'zlib-devel' }
+    default: { fail('Unrecognized operating system for zlib') }
+  }
+  $version = '1.16'
+  $version_branch = "cabal-${version}"
   $awk = 'BEGIN {FS = "."}{ print $1"."$2 }'
   
   exec { 'cabal download':
@@ -18,7 +24,7 @@ class haskell::cabal {
   }
   
   exec { 'cabal git checkout':
-    command => "git checkout remotes/origin/cabal-1.16",
+    command => "git checkout remotes/origin/${version_branch}",
     user => "vagrant",
     cwd => "/home/vagrant/cabal",
     require => Exec["cabal download"],
@@ -56,11 +62,18 @@ class haskell::cabal {
     onlyif => "test -d /home/vagrant/cabal",
   }
 
+  package { 'zlib-dev':
+    name => $zlib_dev,
+    ensure => latest,
+  }
+
   exec { 'cabal-install bootstrap':
-    command => "sh /home/vagrant/cabal/cabal-install/bootstrap.sh",
+    command => "bash -Ec \"CURL='curl -L' sh /home/vagrant/cabal/cabal-install/bootstrap.sh\"",
     cwd => "/home/vagrant/cabal/cabal-install",
     user => "vagrant",
-    require => Exec["cabal git checkout"],
+    require =>
+      [ Exec['cabal git checkout'],
+        Package['zlib-dev'] ],
     onlyif => "test -d /home/vagrant/cabal",
   }
 

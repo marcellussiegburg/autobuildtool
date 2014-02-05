@@ -23,20 +23,24 @@ node default {
     stage => "test",
   }
 
-  exec { 'apt-get update':
-    command => "sudo /usr/bin/apt-get update --fix-missing",
-    before => [ Class["apache"],
-                Class["mysql"],
-                Class["haskell"],
-                Class["git"],
-                Class["autotool"],
-                Class["emacs"] ],
+  if $::operatingsystem == 'ubuntu' {
+    exec { 'apt-get update':
+      command => "sudo /usr/bin/apt-get update --fix-missing",
+      before =>
+        [ Class["apache"],
+          Class["mysql"],
+          Class["haskell"],
+          Class["git"],
+          Class["autotool"],
+          Class["emacs"] ],
+    }
+    Exec['apt-get update'] -> Package['make']
+    Exec['apt-get update'] -> Package['w3m']
   }
 
   package { 'make':
     name => "make",
     ensure => latest,
-    require => Exec["apt-get update"],
     before => [ Class["haskell"],
                 Class["autotool"] ],
   }
@@ -57,7 +61,6 @@ node default {
   package { 'w3m':
     name => "w3m",
     ensure => latest,
-    require => Exec["apt-get update"],
     before => Class["test"],
   }
 }

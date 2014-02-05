@@ -1,5 +1,18 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
 class mysql {
+  case $operatingsystem {
+    ubuntu: {
+      $mysqlclient = 'libmysqlclient-dev'
+      $mysqlservice = 'mysql'
+    }
+    CentOS: {
+      $mysqlclient = ['mysql-devel', 'mysql-libs']
+      $mysqlservice = 'mysqld'
+    }
+    default: {
+      fail('Unrecognized operating system for mysql')
+    }
+  }
   $user = 'user'
   $password = 'passwort'
   $school_id = 1
@@ -17,13 +30,12 @@ class mysql {
     ensure => latest,
   }
 
-  package { 'libmysqlclient':
-    name => "libmysqlclient-dev",
+  package { $mysqlclient:
     ensure => latest,
   }
 
   service { 'mysql':
-    name => mysql,
+    name => $mysqlservice,
     ensure => running,
     require => Package["mysql-server"],
   }
