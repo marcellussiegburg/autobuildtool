@@ -14,7 +14,8 @@ class autotool ($build_doc = true){
   include git
 
   Class["git"] -> Class["haskell"]
-  Class["autotool::autolib"] -> Class["autotool::tool"]
+  -> Class["autotool::autolib"]
+  -> Class["autotool::tool"]
 }
 
 include autotool
