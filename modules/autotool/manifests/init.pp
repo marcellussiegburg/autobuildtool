@@ -7,7 +7,7 @@ Exec {
   timeout => 0,
 }
 
-class autotool {
+class autotool ($build_doc = true){
   include autotool::autolib
   include autotool::tool
   include haskell

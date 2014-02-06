@@ -1,4 +1,4 @@
-class autotool::autolib {
+class autotool::autolib ($build_doc = $autotool::build_doc) {
   include apache
 
   exec { 'git clone autolib':
@@ -26,6 +26,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-cgi':
     cwd => '/home/vagrant/autolib/cgi',
+    build_doc => $build_doc,
     require => Exec['checkout autolib'],
     onlyif => 'test -d /home/vagrant/autolib',
     unless => 'cabal list --installed --simple-output | grep autolib-cgi',
@@ -33,6 +34,7 @@ class autotool::autolib {
   
   cabalinstall { 'autolib-derive':
     cwd     => '/home/vagrant/autolib/derive',
+    build_doc => $build_doc,
     require => Exec['checkout autolib'],
     onlyif  => 'test -d /home/vagrant/autolib/derive',
     unless => 'cabal list --installed --simple-output | grep autolib-derive',
@@ -40,6 +42,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-todoc':
     cwd     => '/home/vagrant/autolib/todoc',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-derive'] ],
@@ -49,6 +52,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-reader':
     cwd     => '/home/vagrant/autolib/reader',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-derive'],
@@ -59,6 +63,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-data':
     cwd     => '/home/vagrant/autolib/data',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-todoc'],
@@ -69,6 +74,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-util':
     cwd     => '/home/vagrant/autolib/util',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-todoc'],
@@ -80,6 +86,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-output':
     cwd     => '/home/vagrant/autolib/output',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-todoc'] ],
@@ -89,6 +96,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-reporter':
     cwd     => '/home/vagrant/autolib/reporter',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-todoc'],
@@ -101,6 +109,7 @@ class autotool::autolib {
  
   cabalinstall { 'autolib-dot':
     cwd     => '/home/vagrant/autolib/dot',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-todoc'],
@@ -115,6 +124,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-algorithm':
     cwd     => '/home/vagrant/autolib/algorithm',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-data'] ],
@@ -124,6 +134,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-relation':
     cwd     => '/home/vagrant/autolib/relation',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-todoc'],
@@ -137,6 +148,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-fa':
     cwd     => '/home/vagrant/autolib/fa',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-todoc'],
@@ -152,6 +164,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-genetic':
     cwd     => '/home/vagrant/autolib/genetic',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-todoc'],
@@ -163,6 +176,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-tex':
     cwd     => '/home/vagrant/autolib/tex',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-todoc'] ],
@@ -172,6 +186,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-rewriting':
     cwd     => '/home/vagrant/autolib/rewriting',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-todoc'],
@@ -188,6 +203,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-transport':
     cwd     => '/home/vagrant/autolib/transport',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-derive'] ],
@@ -197,6 +213,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-graph':
     cwd     => '/home/vagrant/autolib/graph',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-todoc'],
@@ -211,6 +228,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-exp':
     cwd     => '/home/vagrant/autolib/exp',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-reader'],
@@ -224,6 +242,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-fta':
     cwd     => '/home/vagrant/autolib/fta',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-todoc'],
@@ -241,6 +260,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-foa':
     cwd     => '/home/vagrant/autolib/foa',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-todoc'],
@@ -259,6 +279,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-logic':
     cwd     => '/home/vagrant/autolib/logic',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-todoc'],
@@ -271,6 +292,7 @@ class autotool::autolib {
 
   cabalinstall { 'autolib-lib':
     cwd     => '/home/vagrant/autolib/lib',
+    build_doc => $build_doc,
     require =>
       [ Exec['checkout autolib'],
         Cabalinstall['autolib-todoc'],

@@ -1,1 +1,2 @@
 ---
+autotool::build_doc: true

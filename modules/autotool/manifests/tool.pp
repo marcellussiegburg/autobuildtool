@@ -1,5 +1,5 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
-class autotool::tool {
+class autotool::tool ($build_doc = $autotool::build_doc) {
   include autotool::autolib
 
   case $architecture {
@@ -36,6 +36,7 @@ class autotool::tool {
   cabalinstall { 'interface':
     name => "autotool-interface",
     cwd => "/home/vagrant/tool/interface",
+    build_doc => $build_doc,
     require => Exec["checkout"],
     onlyif => "test -d /home/vagrant/tool",
   }
@@ -53,6 +54,7 @@ class autotool::tool {
   cabalinstall { 'collection':
     name => "autotool-collection",
     cwd => "/home/vagrant/tool/collection",
+    build_doc => $build_doc,
     require => Cabalinstall["interface"],
     onlyif => "test -d /home/vagrant/tool",
   }
@@ -74,6 +76,7 @@ class autotool::tool {
   cabalinstall { 'db':
     name => "autotool-db",
     cwd => "/home/vagrant/tool/db",
+    build_doc => $build_doc,
     extra_lib_dirs => $lib_dirs,
     require => [ Cabalinstall["interface"],
                  Cabalinstall["collection"],
@@ -86,6 +89,7 @@ class autotool::tool {
   # cabalinstall { 'test':
   #   name => "autotool-test",
   #   cwd => "/home/vagrant/tool/test",
+  #   build_doc => $build_doc,
   #   require => [ Cabalinstall["collection"],
   #                Cabalinstall["interface"],
   #                Cabalinstall["db"]],
@@ -95,6 +99,7 @@ class autotool::tool {
   cabalinstall { 'server-interface':
     name => "autotool-server-interface",
     cwd => "/home/vagrant/tool/server-interface",
+    build_doc => $build_doc,
     require => Cabalinstall["interface"],
     onlyif => "test -d /home/vagrant/tool",
   }
@@ -106,14 +111,14 @@ class autotool::tool {
     require => Exec["checkout"],
   }
 
-  exec { 'server-implementation':
-    command => "cabal install",
+  cabalinstall { 'server-implementation':
+    name => "autotool-server-implementation",
     cwd => "/home/vagrant/tool/server-implementation",
+    build_doc => $build_doc,
     require => [ Cabalinstall["collection"],
                  Cabalinstall["server-interface"],
                  File["Config.hs link"] ],
     onlyif => "test -d /home/vagrant/tool",
-    unless => "test -x /home/vagrant/.cabal/bin/autotool.cgi",
   }
 
   exec { 'Prepare client':
@@ -126,6 +131,7 @@ class autotool::tool {
   cabalinstall { 'client':
     name => "autolat-client",
     cwd => "/home/vagrant/tool/client",
+    build_doc => $build_doc,
     file => "$cwd/autotool-client.cabal",
     require => [ Exec["checkout"],
                  Cabalinstall["server-interface"],
