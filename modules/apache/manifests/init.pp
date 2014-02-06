@@ -1,8 +1,14 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
 class apache {
   case $operatingsystem {
-    ubuntu: { $apache = 'apache2' }
-    CentOS: { $apache = 'httpd' }
+    ubuntu: {
+      $apache = 'apache2'
+      $cgi_bin = '/usr/lib/cgi-bin'
+    }
+    CentOS: {
+      $apache = 'httpd'
+      $cgi_bin = '/var/www/cgi-bin'
+    }
     default: { fail('Unrecognized operating system for webserver') }
   }
 
@@ -18,7 +24,7 @@ class apache {
   }
 
   file { 'autotool.cgi':
-    name => "/usr/lib/cgi-bin/autotool.cgi",
+    name => "${cgi_bin}/autotool.cgi",
     ensure => file,
     require => [ Class["autotool::tool"],
                  Package["apache2"] ],
@@ -26,7 +32,7 @@ class apache {
   }
 
   file { 'Super.cgi':
-    name => "/usr/lib/cgi-bin/Super.cgi",
+    name => "${cgi_bin}/Super.cgi",
     ensure => file,
     require => [ Class["autotool::tool"],
                  Package["apache2"] ],
