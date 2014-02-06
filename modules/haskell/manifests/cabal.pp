@@ -14,6 +14,7 @@ class haskell::cabal {
   
   exec { 'cabal download':
     command => "git clone git://github.com/haskell/cabal.git",
+    creates => "/home/vagrant/cabal",
     user => "vagrant",
     cwd => "/home/vagrant",
     require => [ Class["haskell::ghc"],
@@ -77,18 +78,18 @@ class haskell::cabal {
     onlyif => "test -d /home/vagrant/cabal",
   }
 
-  file { 'cabal-install link':
-    path => "/usr/local/bin/cabal",
-    target => "/home/vagrant/.cabal/bin/cabal",
-    ensure => link,
-    require => Exec["cabal-install bootstrap"],
-  }
-  
-  exec { 'remove /home/vagrant/cabal':
-    command => "rm -rf /home/vagrant/cabal",
-    cwd => "/home/vagrant",
-    require => [ File["cabal-install link"],
-                 Exec["cabal build"]],
-    onlyif => "test -d /home/vagrant/cabal",
+  file {
+    'cabal-install link':
+      path => '/usr/local/bin/cabal',
+      target => '/home/vagrant/.cabal/bin/cabal',
+      ensure => link,
+      require => Exec['cabal-install bootstrap'];
+    '/home/vagrant/cabal': 
+      ensure  => absent,
+      force   => true,
+      recurse => true,
+      require =>
+       [ Exec['cabal-install bootstrap'],
+         Exec['cabal git checkout'] ];
   }
 }

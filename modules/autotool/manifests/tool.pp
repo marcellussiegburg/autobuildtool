@@ -131,6 +131,7 @@ class autotool::tool ($build_doc = $autotool::build_doc) {
   cabalinstall { 'client':
     name => "autolat-client",
     cwd => "/home/vagrant/tool/client",
+    creates => '/home/vagrant/.cabal/bin/autotool-happs',
     build_doc => $build_doc,
     file => "$cwd/autotool-client.cabal",
     require => [ Exec["checkout"],

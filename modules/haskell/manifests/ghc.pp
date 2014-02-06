@@ -16,20 +16,22 @@ class haskell::ghc {
   $version = "7.6.1"
   $versionname = "ghc-${version}"
   $hardwaremodel = inline_template("<%= %x{uname -i | tr -d '\n'} %>") # (either i386 or x86_64)
+  $archive = "${versionname}-${hardwaremodel}-unknown-linux.tar.bz2"
   
   exec { 'ghc download':
-    command => "wget http://www.haskell.org/ghc/dist/${version}/${versionname}-${hardwaremodel}-unknown-linux.tar.bz2",
+    command => "wget http://www.haskell.org/ghc/dist/${version}/${archive}",
     user => "vagrant",
     cwd => "/home/vagrant",
     unless => "test `ghc --version | awk '{print \$NF}'` = ${version}",
   }
   
   exec { 'ghc extract':
-    command => "tar -xf ${versionname}-${hardwaremodel}-unknown-linux.tar.bz2",
+    command => "tar -xf ${archive}",
+    creates => "/home/vagrant/${versionname}",
     user => "vagrant",
     cwd => "/home/vagrant",
     require => Exec["ghc download"],
-    onlyif => "test -f /home/vagrant/${versionname}-${hardwaremodel}-unknown-linux.tar.bz2",
+    onlyif => "test -f /home/vagrant/${archive}",
   }
 
   package { 'libgmp3':
@@ -58,11 +60,14 @@ class haskell::ghc {
     require => Exec["ghc configure"],
     onlyif => "test -d /home/vagrant/${versionname}",
   }
-  
-  exec { "remove /home/vagrant/${versionname}":
-    command => "rm -rf /home/vagrant/${versionname}*",
-    cwd => "/home/vagrant",
-    require => Exec["install ${versionname}"],
-    onlyif => "test -d /home/vagrant/${versionname}",
+
+  file {
+    [ "/home/vagrant/${versionname}", "/home/vagrant/${archive}" ]:
+      ensure  => absent,
+      force   => true,
+      recurse => true,
+      require =>
+        [ Exec["install ${versionname}"],
+          Exec["ghc configure"] ],
   }
 } 
