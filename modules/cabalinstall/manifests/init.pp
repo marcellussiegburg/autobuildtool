@@ -22,7 +22,7 @@ define cabalinstall ($cwd, $onlyif = undef, $file = "${cwd}/${name}.cabal", $unl
   if ($extra_lib_dirs == undef) {
     $libs = ''
   } else {
-    $libs = "--extra-lib-dirs==${extra_lib_dirs}"
+    $libs = "--extra-lib-dirs=${extra_lib_dirs}"
   }
   ### If the Version number has changed
   ## Install the .cabal file
