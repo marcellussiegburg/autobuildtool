@@ -6,15 +6,20 @@ Vagrant.configure("2") do |config|
   config.vm.box = "centos65x64"
   config.vm.box_url = "http://puppet-vagrant-boxes.puppetlabs.com/centos-65-x64-virtualbox-puppet.box"
 
-  config.vm.provider "virtualbox" do |v|
+  config.vm.provider :virtualbox do |v|
     v.name = "Autotool Autoconfigured " + Time.now.to_s
     v.customize ["modifyvm", :id,
                  "--memory", "2300"]
   end
 
-  config.vm.network "forwarded_port", guest: 80, host: 8080, auto_correct: true
+  config.vm.network :forwarded_port, guest: 80, host: 8080, auto_correct: true
 
-  config.vm.provision "puppet" do |puppet|
+  config.vm.provision :shell do |shell|
+    shell.path = "prepare.sh"
+    shell.privileged = true
+  end
+
+  config.vm.provision :puppet do |puppet|
     puppet.module_path = "modules"
     puppet.manifests_path = "manifests"
     puppet.manifest_file = "site.pp"
