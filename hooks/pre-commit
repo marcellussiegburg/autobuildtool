@@ -1,0 +1,102 @@
+#!/bin/bash
+# pre-commit git hook to check the validity of a puppet manifest
+#
+# Prerequisites:
+#   gem install puppet-lint puppet
+#
+# Install:
+#  /path/to/repo/.git/hooks/pre-comit
+#
+# Original:
+#  blog: http://techblog.roethof.net/puppet/a-puppet-git-pre-commit-hook-is-always-easy-to-have/
+#
+# Authors:
+#  Ronny Roethof
+#  Mattias Geniar <m@ttias.be>
+NOBOLD="\x1b[0m"
+BOLD="\x1b[1m"
+BLACK="\x1b[30m"
+GREY="\x1b[1;30m"
+RED="\x1b[31m"
+GREEN="\x1b[32m"
+YELLOW="\x1b[33m"
+BLUE="\x1b[34m"
+MAGENTA="\x1b[35m"
+CYAN="\x1b[36m"
+WHITE="\x1b[37m"
+ 
+printf "### ${CYAN}Checking puppet syntax, for science!${NOBOLD} ###\n"
+# for file in `git diff --name-only --cached | grep -E '\.(pp|erb)'`
+for file in `git diff --name-only --cached | grep -E '\.(pp)'`
+do
+    # Only check new/modified files
+    if [[ -f $file ]]
+    then
+        syntax_errors=`puppet-lint \
+	    --fail-on-warnings $file`
+#            --with-filename \
+#            --no-80chars-check \
+#            --no-autoloader_layout-check \
+#            --no-nested_classes_or_defines-check \
+#            --with-filename $file
+ 
+        # Set us up to bail if we receive any syntax errors
+        if [[ $? -ne 0 ]]
+        then
+            syntax_is_bad=1
+            printf "$file has ${RED}errors${NOBOLD}:"
+        else
+            printf "$file looks ${GREEN}good${NOBOLD}"
+        fi
+	echo $syntax_errors | sed -e "s/WARNING/\n${YELLOW}WARNING${NOBOLD}/g;s/ERROR/\n${RED}ERROR${NOBOLD}/g"
+    fi
+done
+echo ""
+ 
+printf "### ${CYAN}Checking if puppet manifests are valid${NOBOLD} ###\n"
+# validating the whole manifest takes too long. uncomment this
+# if you want to test the whole shebang.
+# for file in `find . -name "*.pp"`
+# for file in `git diff --name-only --cached | grep -E '\.(pp|erb)'`
+for file in `git diff --name-only --cached | grep -E '\.(pp)'`
+do
+    if [[ -f $file ]]
+    then
+        puppet parser validate $file
+        if [[ $? -ne 0 ]]
+        then
+            printf "${RED}ERROR${NOBOLD}: puppet parser failed at: ${RED}$file${NOBOLD}\n"
+            syntax_is_bad=1
+        else
+            printf "${GREEN}OK${NOBOLD}: $file looks valid\n"
+        fi
+    fi
+done
+echo ""
+ 
+printf "### ${CYAN}Checking if ruby template syntax is valid${NOBOLD} ###\n"
+for file in `git diff --name-only --cached | grep -E '\.(erb)'`
+do
+    if [[ -f $file ]]
+    then
+        erb -P -x -T '-' $file | ruby -c
+        if [[ $? -ne 0 ]]
+        then
+            printf "${RED}ERROR${NOBOLD}: ruby template parser failed at: ${RED}$file${NOBOLD}\n"
+            syntax_is_bad=1
+        else
+            printf "${GREEN}OK${NOBOLD}: $file looks like a valid ruby template\n"
+        fi
+    fi
+done
+echo ""
+
+if [[ $syntax_is_bad -eq 1 ]]
+then
+    printf "${RED}FATAL: Syntax is bad. See above errors${NOBOLD}\n"
+    printf "To ${GREEN}accept ${YELLOW}warnings${NOBOLD} (and ${RED}errors${NOBOLD}) commit using ${CYAN}--no-verify${NOBOLD}\n"
+    exit 1
+else
+    printf "${GREEN}Everything looks good.${NOBOLD}\n"
+    exit 0
+fi
