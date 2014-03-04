@@ -1,5 +1,12 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
-define cabalinstall ($cwd, $onlyif = undef, $file = "${cwd}/${name}.cabal", $unless = undef, $build_doc = true, $extra_lib_dirs = undef, $creates = '') {
+define cabalinstall (
+  $cwd,
+  $onlyif = undef,
+  $file = "${cwd}/${name}.cabal",
+  $unless = undef,
+  $build_doc = true,
+  $extra_lib_dirs = undef,
+  $creates = '') {
   ### If $unless is undefined, assume that the package is installed in the following way:
     ## Extract the Version number of the installed package found in ghc-pkg
     ## Compare it to the number in the .cabal file
@@ -29,16 +36,16 @@ define cabalinstall ($cwd, $onlyif = undef, $file = "${cwd}/${name}.cabal", $unl
   exec { "cabal install ${title} (${name})":
     command => "cabal install ${doc} ${libs}",
     creates => $creates,
-    cwd => $cwd,
-    onlyif => $onlyif,
-    unless => $unl,
+    cwd     => $cwd,
+    onlyif  => $onlyif,
+    unless  => $unl,
   }
-  
+
   ## Remove the (older) installed Version
   exec { "ghc-pkg unregister ${title} (${name})":
     command => "ghc-pkg unregister --force ${name}-\$(${version})",
-    onlyif => $onlyif,
-    unless => ["test \$(${basicfilter} | wc -l) -lt 2", $unl],
+    onlyif  => $onlyif,
+    unless  => ["test \$(${basicfilter} | wc -l) -lt 2", $unl],
     require => Exec["cabal install ${title} (${name})"],
   }
 }

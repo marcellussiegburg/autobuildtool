@@ -1,10 +1,10 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
 Exec {
-  path => [ "/home/vagrant/.cabal/bin", "/bin/", "/sbin/" , "/usr/bin/", "/usr/sbin/", "/usr/local/sbin/", "/usr/local/bin/" ],
-  environment => "HOME=/home/vagrant",
-  logoutput => on_failure,
-  user => "vagrant",
-  timeout => 0,
+  path        => [ '/home/vagrant/.cabal/bin', '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/', '/usr/local/sbin/', '/usr/local/bin/' ],
+  environment => 'HOME=/home/vagrant',
+  logoutput   => on_failure,
+  user        => 'vagrant',
+  timeout     => 0,
 }
 
 node default {
@@ -16,51 +16,53 @@ node default {
   include emacs
 
   stage { 'test':
-    require => Stage["main"],
+    require => Stage['main'],
   }
 
   class { 'test':
-    stage => "test",
+    stage => 'test',
   }
 
   if $::operatingsystem == 'ubuntu' {
     exec { 'apt-get update':
-      command => "sudo /usr/bin/apt-get update --fix-missing",
-      before =>
-        [ Class["apache"],
-          Class["mysql"],
-          Class["haskell"],
-          Class["git"],
-          Class["autotool"],
-          Class["emacs"] ],
+      command => 'sudo /usr/bin/apt-get update --fix-missing',
+      before  =>
+        [ Class['apache'],
+          Class['mysql'],
+          Class['haskell'],
+          Class['git'],
+          Class['autotool'],
+          Class['emacs'] ],
     }
     Exec['apt-get update'] -> Package['make']
     Exec['apt-get update'] -> Package['w3m']
   }
 
   package { 'make':
-    name => "make",
     ensure => latest,
-    before => [ Class["haskell"],
-                Class["autotool"] ],
+    name   => 'make',
+    before =>
+      [ Class['haskell'],
+        Class['autotool'] ],
   }
 
   file { '/home/vagrant':
-    name => "/home/vagrant",
-    ensure => directory,
-    group => "vagrant",
-    owner => "vagrant",
+    ensure  => directory,
+    name    => '/home/vagrant',
+    group   => 'vagrant',
+    owner   => 'vagrant',
     recurse => true,
-    before => [ Class["apache"],
-                Class["mysql"],
-                Class["haskell"],
-                Class["git"],
-                Class["autotool"] ],
+    before  =>
+      [ Class['apache'],
+        Class['mysql'],
+        Class['haskell'],
+        Class['git'],
+        Class['autotool'] ],
   }
 
   package { 'w3m':
-    name => "w3m",
     ensure => latest,
-    before => Class["test"],
+    name   => 'w3m',
+    before => Class['test'],
   }
 }

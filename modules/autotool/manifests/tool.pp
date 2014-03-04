@@ -2,7 +2,7 @@
 class autotool::tool ($build_doc = $autotool::build_doc) {
   include autotool::autolib
 
-  case $architecture {
+  case $::architecture {
     x86_64: {
       $lib_dirs = '/usr/lib64/mysql'
     }
@@ -10,134 +10,137 @@ class autotool::tool ($build_doc = $autotool::build_doc) {
       $lib_dirs = '/usr/lib/mysql'
     }
   }
-  
+
   exec { 'git-clone':
-    command => "git clone git://autolat.imn.htwk-leipzig.de/git/tool /home/vagrant/tool",
-    user => "vagrant",
-    cwd => "/home/vagrant",
-    unless => "test -d /home/vagrant/tool",
-    require => Class["autotool::autolib"],
+    command => 'git clone git://autolat.imn.htwk-leipzig.de/git/tool /home/vagrant/tool',
+    user    => 'vagrant',
+    cwd     => '/home/vagrant',
+    unless  => 'test -d /home/vagrant/tool',
+    require => Class['autotool::autolib'],
   }
-  
+
   exec { 'git fetch tool':
-    command => "git fetch",
-    cwd => "/home/vagrant/tool",
-    require => Exec["git-clone"],
-    before => Exec["checkout"],
+    command => 'git fetch',
+    cwd     => '/home/vagrant/tool',
+    require => Exec['git-clone'],
+    before  => Exec['checkout'],
   }
-  
+
   exec { 'checkout':
-    command => "git checkout -f remotes/origin/classic-via-rpc",
-    cwd => "/home/vagrant/tool",
-    require => Exec["git-clone"],
-    onlyif => "test -d /home/vagrant/tool",
+    command => 'git checkout -f remotes/origin/classic-via-rpc',
+    cwd     => '/home/vagrant/tool',
+    require => Exec['git-clone'],
+    onlyif  => 'test -d /home/vagrant/tool',
   }
-  
+
   cabalinstall { 'interface':
-    name => "autotool-interface",
-    cwd => "/home/vagrant/tool/interface",
+    name      => 'autotool-interface',
+    cwd       => '/home/vagrant/tool/interface',
     build_doc => $build_doc,
-    require => Exec["checkout"],
-    onlyif => "test -d /home/vagrant/tool",
+    require   => Exec['checkout'],
+    onlyif    => 'test -d /home/vagrant/tool',
   }
 
   file { '/home/vagrant/tool/collection/dist':
-    name => "/home/vagrant/tool/collection/dist",
-    ensure => directory,
-    group => "vagrant",
-    owner => "vagrant",
+    name    => '/home/vagrant/tool/collection/dist',
+    ensure  => directory,
+    group   => 'vagrant',
+    owner   => 'vagrant',
     recurse => true,
-    require => Exec["checkout"],
-    before => Cabalinstall["collection"],
+    require => Exec['checkout'],
+    before  => Cabalinstall['collection'],
   }
-  
+
   cabalinstall { 'collection':
-    name => "autotool-collection",
-    cwd => "/home/vagrant/tool/collection",
+    name      => 'autotool-collection',
+    cwd       => '/home/vagrant/tool/collection',
     build_doc => $build_doc,
-    require => Cabalinstall["interface"],
-    onlyif => "test -d /home/vagrant/tool",
+    require   => Cabalinstall['interface'],
+    onlyif    => 'test -d /home/vagrant/tool',
   }
-  
+
   file { 'Mysqlconnect.hs link':
-    ensure => link,
-    name => "/home/vagrant/tool/db/src/Mysqlconnect.hs",
-    target => "/home/vagrant/tool/db/src/Mysqlconnect.hs.example",
-    require => Exec["checkout"],
+    ensure  => link,
+    name    => '/home/vagrant/tool/db/src/Mysqlconnect.hs',
+    target  => '/home/vagrant/tool/db/src/Mysqlconnect.hs.example',
+    require => Exec['checkout'],
   }
-  
+
   file { 'Default.hs link':
-    ensure => link,
-    name => "/home/vagrant/tool/db/src/Default.hs",
-    target => "/home/vagrant/tool/db/src/Default.hs.sample",
-    require => Exec["checkout"],
+    ensure  => link,
+    name    => '/home/vagrant/tool/db/src/Default.hs',
+    target  => '/home/vagrant/tool/db/src/Default.hs.sample',
+    require => Exec['checkout'],
   }
 
   cabalinstall { 'db':
-    name => "autotool-db",
-    cwd => "/home/vagrant/tool/db",
-    build_doc => $build_doc,
+    name           => 'autotool-db',
+    cwd            => '/home/vagrant/tool/db',
+    build_doc      => $build_doc,
     extra_lib_dirs => $lib_dirs,
-    require => [ Cabalinstall["interface"],
-                 Cabalinstall["collection"],
-                 Cabalinstall["server-interface"],
-                 File["Mysqlconnect.hs link"],
-                 File["Default.hs link"] ],
-    onlyif => "test -d /home/vagrant/tool",
+    require        =>
+      [ Cabalinstall['interface'],
+        Cabalinstall['collection'],
+        Cabalinstall['server-interface'],
+        File['Mysqlconnect.hs link'],
+        File['Default.hs link'] ],
+    onlyif         => 'test -d /home/vagrant/tool',
   }
 
   # cabalinstall { 'test':
-  #   name => "autotool-test",
-  #   cwd => "/home/vagrant/tool/test",
+  #   name      => 'autotool-test',
+  #   cwd       => '/home/vagrant/tool/test',
   #   build_doc => $build_doc,
-  #   require => [ Cabalinstall["collection"],
-  #                Cabalinstall["interface"],
-  #                Cabalinstall["db"]],
-  #   onlyif => "test -d /home/vagrant/tool",
+  #   require   =>
+  #     [ Cabalinstall['collection'],
+  #       Cabalinstall['interface'],
+  #       Cabalinstall['db']],
+  #   onlyif    => 'test -d /home/vagrant/tool',
   # }
 
   cabalinstall { 'server-interface':
-    name => "autotool-server-interface",
-    cwd => "/home/vagrant/tool/server-interface",
+    name      => 'autotool-server-interface',
+    cwd       => '/home/vagrant/tool/server-interface',
     build_doc => $build_doc,
-    require => Cabalinstall["interface"],
-    onlyif => "test -d /home/vagrant/tool",
+    require   => Cabalinstall['interface'],
+    onlyif    => 'test -d /home/vagrant/tool',
   }
-  
+
   file { 'Config.hs link':
-    ensure => link,
-    name => "/home/vagrant/tool/server-implementation/src/Config.hs",
-    target => "/home/vagrant/tool/server-implementation/src/Config.hs.sample",
-    require => Exec["checkout"],
+    ensure  => link,
+    name    => '/home/vagrant/tool/server-implementation/src/Config.hs',
+    target  => '/home/vagrant/tool/server-implementation/src/Config.hs.sample',
+    require => Exec['checkout'],
   }
 
   cabalinstall { 'server-implementation':
-    name => "autotool-server-implementation",
-    cwd => "/home/vagrant/tool/server-implementation",
+    name      => 'autotool-server-implementation',
+    cwd       => '/home/vagrant/tool/server-implementation',
     build_doc => $build_doc,
-    require => [ Cabalinstall["collection"],
-                 Cabalinstall["server-interface"],
-                 File["Config.hs link"] ],
-    onlyif => "test -d /home/vagrant/tool",
+    require   =>
+      [ Cabalinstall['collection'],
+        Cabalinstall['server-interface'],
+        File['Config.hs link'] ],
+    onlyif    => 'test -d /home/vagrant/tool',
   }
 
   exec { 'Prepare client':
-    command => ["sed 's/\\-\\- autotool-server/autotool-server-interface/' autotool-client.cabal > tmp.cabal; cat tmp.cabal > autotool-client.cabal; rm tmp.cabal"],
-    cwd => "/home/vagrant/tool/client",
-    require => Exec["checkout"],
-    onlyif => "test -d /home/vagrant/tool",
+    command => ['sed "s/\\-\\- autotool-server/autotool-server-interface/" autotool-client.cabal > tmp.cabal; cat tmp.cabal > autotool-client.cabal; rm tmp.cabal'],
+    cwd     => '/home/vagrant/tool/client',
+    require => Exec['checkout'],
+    onlyif  => 'test -d /home/vagrant/tool',
   }
-  
+
   cabalinstall { 'client':
-    name => "autolat-client",
-    cwd => "/home/vagrant/tool/client",
-    creates => '/home/vagrant/.cabal/bin/autotool-happs',
+    name      => 'autolat-client',
+    cwd       => '/home/vagrant/tool/client',
+    creates   => '/home/vagrant/.cabal/bin/autotool-happs',
     build_doc => $build_doc,
-    file => "$cwd/autotool-client.cabal",
-    require => [ Exec["checkout"],
-                 Cabalinstall["server-interface"],
-                 Exec["Prepare client"] ],
-    onlyif => "test -d /home/vagrant/tool",
+    file      => "$cwd/autotool-client.cabal",
+    require   =>
+      [ Exec['checkout'],
+        Cabalinstall['server-interface'],
+        Exec['Prepare client'] ],
+    onlyif    => 'test -d /home/vagrant/tool',
   }
-  
 }
