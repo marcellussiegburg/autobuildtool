@@ -11,13 +11,17 @@ class autotool ($build_doc = true){
   include autotool::autolib
   include autotool::tool
   include autotool::doc
+  include autotool::database
   include haskell
   include git
 
-  Class['git'] -> Class['haskell']
+  Class['git']
+  -> Class['haskell']
   -> Class['autotool::autolib']
   -> Class['autotool::tool']
   -> Class['autotool::doc']
+  Class['autotool::tool'] -> Class['autotool::database']
+  Class['mysql'] -> Class['autotool::database']
   Class['apache'] -> Class['autotool::doc']
 }
 
