@@ -1,6 +1,8 @@
 ---
 :backends: yaml
 :yaml:
-  :datadir: config
-:hierarchy: common
+  :datadir: /vagrant/config
+:hierarchy:
+  - config
+  - "%{::operatingsystem}"
 :logger: console

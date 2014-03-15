@@ -1,18 +1,5 @@
-###  (c) Marcellus Siegburg, 2014, License: GPL
-class mysql {
-  case $::operatingsystem {
-    ubuntu: {
-      $mysqlclient = 'libmysqlclient-dev'
-      $mysqlservice = 'mysql'
-    }
-    CentOS: {
-      $mysqlclient = ['mysql-devel', 'mysql-libs']
-      $mysqlservice = 'mysqld'
-    }
-    default: {
-      fail('Unrecognized operating system for mysql')
-    }
-  }
+###  (c) Marcellus Siegburg, 2013-2014, License: GPL
+class mysql ($mysqlclient, $mysqlservice) {
   package { 'mysql-server':
     ensure => latest,
   }

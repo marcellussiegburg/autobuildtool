@@ -1,0 +1,10 @@
+---
+autotool::tool::cgi_bin: '/var/www/cgi-bin'
+apache::apache: 'httpd'
+haskell::cabal::zlib_dev: 'zlib-devel'
+haskell::ghc::libgmp: 'gmp'
+haskell::ghc::libgmp_dev: 'gmp-devel'
+mysql::mysqlclient:
+  - 'mysql-devel'
+  - 'mysql-libs'
+mysql::mysqlservice: 'mysqld'

@@ -1,0 +1,12 @@
+---
+apache::apache: 'apache2'
+autotool::build_doc: true
+autotool::database::school_name: 'school'
+autotool::database::school_mail_suffix: 'localhost'
+autotool::database::minister_matrikel_number: '0'
+autotool::database::minister_email: 'vagrant@localhost'
+autotool::database::minister_familyname: 'Mustermann'
+autotool::database::minister_name: 'Max'
+autotool::database::minister_password: 'foobar'
+haskell::ghc::version: '7.6.1'
+

@@ -1,19 +1,5 @@
-###  (c) Marcellus Siegburg, 2013, License: GPL
-class haskell::ghc {
-  case $::operatingsystem {
-    ubuntu: {
-      $libgmp = 'libgmp3c2'
-      $libgmp_dev = 'libgmp3-dev'
-    }
-    CentOS: {
-      $libgmp = 'gmp'
-      $libgmp_dev = 'gmp-devel'
-    }
-    default: {
-      fail('Unrecognized operating system for libgmp')
-    }
-  }
-  $version = '7.6.1'
+###  (c) Marcellus Siegburg, 2013-2014, License: GPL
+class haskell::ghc ($libgmp, $libgmp_dev, $version) {
   $versionname = "ghc-${version}"
   # $hardwaremodel is either 'i386' or 'x86_64'
   $hardwaremodel = inline_template("<%= %x{uname -i | tr -d '\n'} %>")

@@ -1,13 +1,8 @@
-###  (c) Marcellus Siegburg, 2013, License: GPL
-class haskell::cabal {
+###  (c) Marcellus Siegburg, 2013-2014, License: GPL
+class haskell::cabal ($zlib_dev) {
   include git
   include haskell::ghc
 
-  case $::operatingsystem {
-    ubuntu: { $zlib_dev = 'zlibc' }
-    CentOS: { $zlib_dev = 'zlib-devel' }
-    default: { fail('Unrecognized operating system for zlib') }
-  }
   $version = '1.16'
   $version_branch = "cabal-${version}"
   $awk = 'BEGIN {FS = "."}{ print $1"."$2 }'

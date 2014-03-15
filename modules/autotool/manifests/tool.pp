@@ -1,5 +1,5 @@
-###  (c) Marcellus Siegburg, 2013, License: GPL
-class autotool::tool ($build_doc = $autotool::build_doc) {
+###  (c) Marcellus Siegburg, 2013-2014, License: GPL
+class autotool::tool ($build_doc = $autotool::build_doc, $cgi_bin) {
   include autotool::autolib
 
   case $::architecture {
@@ -39,16 +39,6 @@ class autotool::tool ($build_doc = $autotool::build_doc) {
     build_doc => $build_doc,
     require   => Exec['checkout'],
     onlyif    => 'test -d /home/vagrant/tool',
-  }
-
-  file { '/home/vagrant/tool/collection/dist':
-    name    => '/home/vagrant/tool/collection/dist',
-    ensure  => directory,
-    group   => 'vagrant',
-    owner   => 'vagrant',
-    recurse => true,
-    require => Exec['checkout'],
-    before  => Cabalinstall['collection'],
   }
 
   cabalinstall { 'collection':
@@ -124,23 +114,35 @@ class autotool::tool ($build_doc = $autotool::build_doc) {
     onlyif    => 'test -d /home/vagrant/tool',
   }
 
-  exec { 'Prepare client':
-    command => ['sed "s/\\-\\- autotool-server/autotool-server-interface/" autotool-client.cabal > tmp.cabal; cat tmp.cabal > autotool-client.cabal; rm tmp.cabal'],
-    cwd     => '/home/vagrant/tool/client',
-    require => Exec['checkout'],
-    onlyif  => 'test -d /home/vagrant/tool',
+  file { "${cgi_bin}/autotool.cgi":
+    ensure  => file,
+    require => Cabalinstall['server-implementation'],
+    source  => '/home/vagrant/.cabal/bin/autotool.cgi',
   }
 
-  cabalinstall { 'client':
-    name      => 'autolat-client',
-    cwd       => '/home/vagrant/tool/client',
-    creates   => '/home/vagrant/.cabal/bin/autotool-happs',
-    build_doc => $build_doc,
-    file      => "$cwd/autotool-client.cabal",
-    require   =>
-      [ Exec['checkout'],
-        Cabalinstall['server-interface'],
-        Exec['Prepare client'] ],
-    onlyif    => 'test -d /home/vagrant/tool',
+  file { "${cgi_bin}/Super.cgi":
+    ensure  => file,
+    require => Cabalinstall['server-implementation'],
+    source  => '/home/vagrant/.cabal/bin/autotool-Super',
   }
+
+  # exec { 'Prepare client':
+  #   command => ['sed "s/\\-\\- autotool-server/autotool-server-interface/" autotool-client.cabal > tmp.cabal; cat tmp.cabal > autotool-client.cabal; rm tmp.cabal'],
+  #   cwd     => '/home/vagrant/tool/client',
+  #   require => Exec['checkout'],
+  #   onlyif  => 'test -d /home/vagrant/tool',
+  # }
+
+  # cabalinstall { 'client':
+  #   name      => 'autolat-client',
+  #   cwd       => '/home/vagrant/tool/client',
+  #   creates   => '/home/vagrant/.cabal/bin/autotool-happs',
+  #   build_doc => $build_doc,
+  #   file      => "$cwd/autotool-client.cabal",
+  #   require   =>
+  #     [ Exec['checkout'],
+  #       Cabalinstall['server-interface'],
+  #       Exec['Prepare client'] ],
+  #   onlyif    => 'test -d /home/vagrant/tool',
+  # }
 }

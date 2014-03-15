@@ -1,16 +1,11 @@
 ###  (c) Marcellus Siegburg, 2014, License: GPL
-class autotool::database {
+class autotool::database ($school_name, $school_mail_suffix,
+$minister_matrikel_number, $minister_email, $minister_familyname,
+$minister_name, $minister_password) {
   $user = 'user'
   $password = 'passwort'
   $school_id = 1
-  $school_name = 'school'
-  $school_mail_suffix = 'localhost'
   $minister_id = 1
-  $minister_matrikel_number = '0'
-  $minister_email = 'vagrant@localhost'
-  $minister_familyname = 'Mustermann'
-  $minister_name = 'Max'
-  $minister_password = 'foobar'
   $minister_password_enc = "ghc -i/home/vagrant/tool/db/src Operate.Crypt -e 'encrypt \"${minister_password}\"'"
 
   exec { 'Create Database':
