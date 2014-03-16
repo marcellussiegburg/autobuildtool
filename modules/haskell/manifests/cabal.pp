@@ -1,78 +1,99 @@
 ###  (c) Marcellus Siegburg, 2013-2014, License: GPL
-class haskell::cabal ($zlib_dev) {
+class haskell::cabal ($zlib_dev, $version, $install_version) {
   include git
   include haskell::ghc
 
-  $version = '1.16'
-  $version_branch = "cabal-${version}"
-  $awk = 'BEGIN {FS = "."}{ print $1"."$2 }'
+  $url = 'http://www.haskell.org/cabal/release'
+  $cabal_name = "Cabal-${version}"
+  $cabal_path = "/home/vagrant/${cabal_name}"
+  $install_name = "cabal-install-${install_version}"
+  $install_path = "/home/vagrant/${install_name}"
 
   exec { 'cabal download':
-    command => 'git clone git://github.com/haskell/cabal.git',
-    creates => '/home/vagrant/cabal',
+    command => "wget ${url}/cabal-${version}/${cabal_name}.tar.gz",
+    creates => "${cabal_path}.tar.gz",
     user    => 'vagrant',
     cwd     => '/home/vagrant',
     require =>
       [ Class['haskell::ghc'],
         Class['git'] ],
-    onlyif  => 'test ! -d /home/vagrant/cabal',
-    unless  =>
-      [ "test \"`cabal --version | tail -1 | awk '{print \$3}' | awk '${awk}'`\" = ${version}",
-        "test \"`cabal --version | head -1 | awk '{print \$NF}' | awk '${awk}'`\" = ${version}"],
+    unless  => "test \"`cabal --version | tail -1 | awk '{print \$3}'`\" = ${version}",
+  }
+  
+  exec { 'cabal-install download':
+    command => "wget ${url}/${install_name}/${install_name}.tar.gz",
+    creates => "${install_path}.tar.gz",
+    user    => 'vagrant',
+    cwd     => '/home/vagrant',
+    require =>
+      [ Class['haskell::ghc'],
+        Class['git'] ],
+    unless  => "test \"`cabal --version | head -1 | awk '{print \$NF}'`\" = ${version}",
   }
 
-  exec { 'cabal git checkout':
-    command => "git checkout remotes/origin/${version_branch}",
+  exec { 'cabal extract':
+    command => "tar -xf ${cabal_name}.tar.gz",
+    creates => $cabal_path,
     user    => 'vagrant',
-    cwd     => '/home/vagrant/cabal',
+    cwd     => '/home/vagrant',
     require => Exec['cabal download'],
-    onlyif  => 'test -d /home/vagrant/cabal',
+    onlyif  => "test -f ${cabal_path}.tar.gz",
+  }
+  
+  exec { 'cabal-install extract':
+    command => "tar -xf ${install_name}.tar.gz",
+    creates => $install_path,
+    user    => 'vagrant',
+    cwd     => '/home/vagrant',
+    require => Exec['cabal-install download'],
+    onlyif  => "test -f ${install_path}.tar.gz",
   }
 
   exec { 'cabal make':
     command => 'ghc --make Setup',
     user    => 'vagrant',
-    cwd     => '/home/vagrant/cabal/Cabal',
-    require => Exec['cabal git checkout'],
-    onlyif  => 'test -d /home/vagrant/cabal'
+    cwd     => $cabal_path,
+    require => Exec['cabal extract'],
+    onlyif  => "test -d ${cabal_path}"
   }
 
   exec { 'cabal configure':
-    command => '/home/vagrant/cabal/Cabal/Setup configure',
+    command => "${cabal_path}/Setup configure",
     user    => 'vagrant',
-    cwd     => '/home/vagrant/cabal/Cabal',
+    cwd     => $cabal_path,
     require => Exec['cabal make'],
-    onlyif  => 'test -d /home/vagrant/cabal',
+    onlyif  => "test -d ${cabal_path}"
   }
 
   exec { 'cabal build':
-    command => '/home/vagrant/cabal/Cabal/Setup build',
+    command => "${cabal_path}/Setup build",
     user    => 'vagrant',
-    cwd     => '/home/vagrant/cabal/Cabal',
+    cwd     => $cabal_path,
     require => Exec['cabal configure'],
-    onlyif  => 'test -d /home/vagrant/cabal',
+    onlyif  => "test -d ${cabal_path}"
   }
 
   exec { 'cabal install':
-    command => 'sudo /home/vagrant/cabal/Cabal/Setup install',
-    cwd     => '/home/vagrant/cabal/Cabal',
+    command => "${cabal_path}/Setup install",
+    user    => 'root',
+    cwd     => $cabal_path,
     require => Exec['cabal build'],
-    onlyif  => 'test -d /home/vagrant/cabal',
+    onlyif  => "test -d ${cabal_path}"
   }
 
-  package { 'zlib-dev':
+  package { $zlib_dev:
     ensure => latest,
     name   => $zlib_dev,
   }
 
   exec { 'cabal-install bootstrap':
-    command => "bash -Ec \"CURL='curl -L' sh /home/vagrant/cabal/cabal-install/bootstrap.sh\"",
-    cwd     => '/home/vagrant/cabal/cabal-install',
+    command => "bash -Ec \"CURL='curl -L' sh bootstrap.sh\"",
     user    => 'vagrant',
+    cwd     => $install_path,
     require =>
-      [ Exec['cabal git checkout'],
-        Package['zlib-dev'] ],
-    onlyif  => 'test -d /home/vagrant/cabal',
+      [ Exec['cabal-install extract'],
+        Package[$zlib_dev] ],
+    onlyif  => "test -d ${install_path}"
   }
 
   file {
@@ -81,12 +102,15 @@ class haskell::cabal ($zlib_dev) {
       path    => '/usr/local/bin/cabal',
       target  => '/home/vagrant/.cabal/bin/cabal',
       require => Exec['cabal-install bootstrap'];
-    '/home/vagrant/cabal':
+    $cabal_path:
       ensure  => absent,
       force   => true,
       recurse => true,
-      require =>
-        [ Exec['cabal-install bootstrap'],
-          Exec['cabal git checkout'] ];
+      require => Exec['cabal extract'];
+    $install_path:
+      ensure  => absent,
+      force   => true,
+      recurse => true,
+      require => Exec['cabal-install bootstrap'];
   }
 }
