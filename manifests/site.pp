@@ -1,6 +1,8 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
 Exec {
-  path        => [ '/home/vagrant/.cabal/bin', '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/', '/usr/local/sbin/', '/usr/local/bin/' ],
+  path        =>
+    [ '/home/vagrant/.cabal/bin', '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/',
+      '/usr/local/sbin/', '/usr/local/bin/' ],
   environment => 'HOME=/home/vagrant',
   logoutput   => on_failure,
   user        => 'vagrant',
@@ -16,31 +18,20 @@ node default {
   include emacs
 
   stage { 'test':
-    require => Stage['main'],
   }
+
+  Stage['main'] -> Stage['test']
 
   class { 'test':
     stage => 'test',
   }
 
-  if $::operatingsystem == 'ubuntu' {
-    exec { 'apt-get update':
-      command => 'sudo /usr/bin/apt-get update --fix-missing',
-      before  =>
-        [ Class['apache'],
-          Class['mysql'],
-          Class['haskell'],
-          Class['git'],
-          Class['autotool'],
-          Class['emacs'] ],
-    }
-    Exec['apt-get update'] -> Package['make']
-    Exec['apt-get update'] -> Package['w3m']
+  package { 'emacs':
+    ensure => latest,
   }
 
   package { 'make':
     ensure => latest,
-    name   => 'make',
     before =>
       [ Class['haskell'],
         Class['autotool'] ],
