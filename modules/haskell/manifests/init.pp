@@ -2,12 +2,16 @@
 class haskell {
   include haskell::ghc
   include haskell::cabal
+  include haskell::cabal_install
 
   Class['haskell::ghc'] -> Class['haskell::cabal']
+  Class['haskell::ghc'] -> Class['haskell::cabal_install']
 
   exec { 'cabal update':
     command => 'cabal update',
-    require => Class['haskell::cabal'],
+    require =>
+      [ Class['haskell::cabal'],
+        Class['haskell::cabal_install'] ],
   }
 
   exec { 'cabal install happy alex haddock hscolour':

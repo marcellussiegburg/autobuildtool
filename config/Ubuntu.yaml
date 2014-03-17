@@ -2,7 +2,7 @@
 autotool::doc::html_dir: '/var/www'
 autotool::tool::cgi_bin: '/usr/lib/cgi-bin'
 apache::apache: 'apache2'
-haskell::cabal::zlib_dev: 'zlibc'
+haskell::cabal_install::zlib_dev: 'zlibc'
 haskell::ghc::libgmp: 'libgmp3c2'
 haskell::ghc::libgmp_dev: 'libgmp3-dev'
 mysql::mysqlclient: 'libmysqlclient-dev'
