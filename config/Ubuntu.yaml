@@ -1,4 +1,5 @@
 ---
+autotool::doc::html_dir: '/var/www'
 autotool::tool::cgi_bin: '/usr/lib/cgi-bin'
 apache::apache: 'apache2'
 haskell::cabal::zlib_dev: 'zlibc'

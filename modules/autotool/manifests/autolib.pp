@@ -1,18 +1,13 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
 class autotool::autolib ($build_doc = $autotool::build_doc) {
-  include apache
-
   exec { 'git clone autolib':
     command => 'git clone git://autolat.imn.htwk-leipzig.de/git/autolib /home/vagrant/autolib',
-    cwd     => '/vagrant',
-    user    => 'vagrant',
     unless  => 'test -d /home/vagrant/autolib',
   }
 
   exec { 'checkout autolib':
     command => 'git checkout remotes/origin/release',
     cwd     => '/home/vagrant/autolib',
-    user    => 'vagrant',
     require => Exec['git clone autolib'],
     unless  => 'cabal list --installed --simple-output | grep "autolib "',
   }
@@ -20,7 +15,6 @@ class autotool::autolib ($build_doc = $autotool::build_doc) {
   exec { 'git fetch autolib':
     command => 'git fetch',
     cwd     => '/home/vagrant/autolib',
-    user    => 'vagrant',
     require => Exec['git clone autolib'],
     before  => Exec['checkout autolib'],
   }

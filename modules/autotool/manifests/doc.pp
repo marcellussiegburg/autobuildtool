@@ -1,16 +1,5 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
-class autotool::doc ($relative_links = true, $domain = 'http://localhost', $port = '80') {
-  case $::operatingsystem {
-    ubuntu: {
-      $html_dir = '/var/www'
-    }
-    CentOS: {
-      $html_dir = '/var/www/html'
-    }
-    default: {
-      fail("Operating system ${::operatingsystem} not supported for doc")
-    }
-  }
+class autotool::doc ($relative_links = true, $domain = 'http://localhost', $port = '80', $html_dir) {
   $abs_to_rel = '/vagrant/modules/autotool/files/abs2rel.sh'
   if $relative_links {
     $webroot = $html_dir

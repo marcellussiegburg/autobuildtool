@@ -11,16 +11,11 @@ $minister_name, $minister_password) {
   exec { 'Create Database':
     command => "echo 'GRANT ALL ON autoan.* TO \"${user}\"@\"localhost\" IDENTIFIED BY \"${password}\"; CREATE DATABASE autoan;' | mysql -u root",
     user    => 'root',
-    require =>
-      [ Class['mysql'],
-        Class['autotool::tool'] ],
     unless  => 'echo "show databases;" | mysql -u root | grep ^autoan\$',
   }
 
   exec { 'Prepare TABLES file':
     command => 'sed "s/TYPE/ENGINE/" /home/vagrant/tool/TABLES > /home/vagrant/TABLES',
-    user    => 'vagrant',
-    require => Class['autotool::tool'],
     unless  => 'test -f /home/vagrant/TABLES',
   }
 
@@ -28,9 +23,7 @@ $minister_name, $minister_password) {
     command => "mysql -u ${user} -p${password} autoan < /home/vagrant/TABLES",
     user    => 'root',
     require =>
-      [ Class['mysql'],
-        Class['autotool::tool'],
-        Exec['Prepare TABLES file'],
+      [ Exec['Prepare TABLES file'],
         Exec['Create Database'] ],
     unless  => 'echo "use autoan; show tables;" | mysql -u root | grep ^aufgabe$',
   }

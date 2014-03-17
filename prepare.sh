@@ -12,5 +12,6 @@ case $(facter osfamily) in
 	echo "Operating System Family not supported" >&2
 	exit 1 ;;
 esac
+chown vagrant:vagrant /home/vagrant
 service puppet stop
 exit 0

@@ -6,6 +6,7 @@ class apache ($apache) {
 
   service { $apache:
     ensure  => running,
+    enable  => true,
     require => Package[$apache],
   }
 }

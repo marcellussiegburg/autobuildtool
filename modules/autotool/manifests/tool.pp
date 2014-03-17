@@ -1,7 +1,5 @@
 ###  (c) Marcellus Siegburg, 2013-2014, License: GPL
 class autotool::tool ($build_doc = $autotool::build_doc, $cgi_bin) {
-  include autotool::autolib
-
   case $::architecture {
     x86_64: {
       $lib_dirs = '/usr/lib64/mysql'
@@ -13,10 +11,7 @@ class autotool::tool ($build_doc = $autotool::build_doc, $cgi_bin) {
 
   exec { 'git-clone':
     command => 'git clone git://autolat.imn.htwk-leipzig.de/git/tool /home/vagrant/tool',
-    user    => 'vagrant',
-    cwd     => '/home/vagrant',
     unless  => 'test -d /home/vagrant/tool',
-    require => Class['autotool::autolib'],
   }
 
   exec { 'git fetch tool':

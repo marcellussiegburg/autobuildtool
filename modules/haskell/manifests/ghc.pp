@@ -3,22 +3,19 @@ class haskell::ghc ($libgmp, $libgmp_dev, $version) {
   $versionname = "ghc-${version}"
   # $hardwaremodel is either 'i386' or 'x86_64'
   $hardwaremodel = inline_template("<%= %x{uname -i | tr -d '\n'} %>")
-  $archive = "${versionname}-${hardwaremodel}-unknown-linux.tar.bz2"
+  $path = "/home/vagrant/${versionname}"
+  $archive = "/home/vagrant/${versionname}-${hardwaremodel}-unknown-linux.tar.bz2"
 
   exec { 'ghc download':
     command => "wget http://www.haskell.org/ghc/dist/${version}/${archive}",
-    user    => 'vagrant',
-    cwd     => '/home/vagrant',
     unless  => "test `ghc --version | awk '{print \$NF}'` = ${version}",
   }
 
   exec { 'ghc extract':
     command => "tar -xf ${archive}",
-    creates => "/home/vagrant/${versionname}",
-    user    => 'vagrant',
-    cwd     => '/home/vagrant',
+    creates => $path,
     require => Exec['ghc download'],
-    onlyif  => "test -f /home/vagrant/${archive}",
+    onlyif  => "test -f ${archive}",
   }
 
   package { $libgmp:
@@ -31,24 +28,24 @@ class haskell::ghc ($libgmp, $libgmp_dev, $version) {
   }
 
   exec { 'ghc configure':
-    command => "/home/vagrant/${versionname}/configure --prefix=/usr/local",
-    user    => 'vagrant',
-    cwd     => "/home/vagrant/${versionname}",
+    command => "${path}/configure --prefix=/usr/local",
+    cwd     => $path,
     require =>
       [ Exec['ghc extract'],
         Package[$libgmp_dev] ],
-    onlyif  => "test -d /home/vagrant/${versionname}",
+    onlyif  => "test -d ${path}",
   }
 
   exec { "install ${versionname}":
-    command => 'sudo make install',
-    cwd     => "/home/vagrant/${versionname}",
+    command => 'make install',
+    user    => 'root',
+    cwd     => $path,
     require => Exec['ghc configure'],
-    onlyif  => "test -d /home/vagrant/${versionname}",
+    onlyif  => "test -d ${path}",
   }
 
   file {
-    [ "/home/vagrant/${versionname}", "/home/vagrant/${archive}" ]:
+    [$path, $archive]:
       ensure  => absent,
       force   => true,
       recurse => true,

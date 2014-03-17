@@ -1,28 +1,13 @@
-###  (c) Marcellus Siegburg, 2013, License: GPL
-Exec {
-  path        => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/', '/usr/local/sbin/', '/usr/local/bin/' , '/home/vagrant/.cabal/bin/' ],
-  environment => 'HOME=/home/vagrant',
-  logoutput   => on_failure,
-  user        => 'vagrant',
-  timeout     => 0,
-}
-
+###  (c) Marcellus Siegburg, 2013-2014, License: GPL
 class autotool ($build_doc = true){
   include autotool::autolib
   include autotool::tool
   include autotool::doc
   include autotool::database
-  include haskell
-  include git
 
-  Class['git']
-  -> Class['haskell']
+  Class['autotool']
   -> Class['autotool::autolib']
   -> Class['autotool::tool']
-  -> Class['autotool::doc']
-  Class['autotool::tool'] -> Class['autotool::database']
-  Class['mysql'] -> Class['autotool::database']
-  Class['apache'] -> Class['autotool::doc']
+  -> Class['autotool::database']
+  Class['autotool::tool'] -> Class['autotool::doc']
 }
-
-include autotool
