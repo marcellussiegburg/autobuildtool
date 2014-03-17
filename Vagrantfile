@@ -2,17 +2,21 @@
 # vi: set ft=ruby :
 ###  (c) Marcellus Siegburg, 2013, License: GPL
 
+require 'yaml'
+vmconf = YAML::load_file("config/config.yaml")
+
 Vagrant.configure("2") do |config|
-  config.vm.box = "centos65x64"
-  config.vm.box_url = "http://puppet-vagrant-boxes.puppetlabs.com/centos-65-x64-virtualbox-puppet.box"
+  config.vm.box = vmconf['vm']['box']
+  config.vm.box_url = vmconf['vm']['box_url']
 
   config.vm.provider :virtualbox do |v|
     v.name = "Autotool Autoconfigured " + Time.now.to_s
     v.customize ["modifyvm", :id,
-                 "--memory", "2300"]
+                 "--memory", vmconf['vm']['memory']]
   end
 
-  config.vm.network :forwarded_port, guest: 80, host: 8080, auto_correct: true
+  config.vm.network :forwarded_port, id: :ssh, guest: 22, host: vmconf['vm']['ssh_port'], auto_correct: vmconf['vm']['ssh_port_auto_correct']
+  config.vm.network :forwarded_port, id: :http, guest: 80, host: vmconf['vm']['web_port'], auto_correct: vmconf['vm']['web_port_auto_correct']
 
   config.vm.provision :shell do |shell|
     shell.path = "prepare.sh"
