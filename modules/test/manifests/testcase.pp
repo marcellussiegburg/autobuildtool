@@ -1,4 +1,4 @@
-###  (c) Marcellus Siegburg, 2013, License: GPL
+###  (c) Marcellus Siegburg, 2013-2014, License: GPL
 define test::testcase($command, $success = '', $failure = '', $unless = []) {
   exec { "${title} pass: ${success}":
     command   => "echo '${title} pass: ${success}'",
