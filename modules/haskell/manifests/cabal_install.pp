@@ -23,7 +23,7 @@ class haskell::cabal_install ($zlib_dev, $version) {
   }
 
   exec { 'cabal-install bootstrap':
-    command => "bash -Ec \"CURL='curl -L' sh bootstrap.sh\"",
+    command => 'bash -Ec "CURL=\'curl -L\' sh bootstrap.sh"',
     cwd     => $path,
     require =>
       [ Exec['cabal-install extract'],

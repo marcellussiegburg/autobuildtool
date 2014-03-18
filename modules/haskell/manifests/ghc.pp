@@ -4,10 +4,11 @@ class haskell::ghc ($libgmp, $libgmp_dev, $version) {
   # $hardwaremodel is either 'i386' or 'x86_64'
   $hardwaremodel = inline_template("<%= %x{uname -i | tr -d '\n'} %>")
   $path = "/home/vagrant/${versionname}"
+  $archive_name = "${versionname}-${hardwaremodel}-unknown-linux.tar.bz2"
   $archive = "/home/vagrant/${versionname}-${hardwaremodel}-unknown-linux.tar.bz2"
 
   exec { 'ghc download':
-    command => "wget http://www.haskell.org/ghc/dist/${version}/${archive}",
+    command => "wget http://www.haskell.org/ghc/dist/${version}/${archive_name}",
     unless  => "test `ghc --version | awk '{print \$NF}'` = ${version}",
   }
 
