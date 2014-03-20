@@ -20,6 +20,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision :shell do |shell|
     shell.path = "prepare.sh"
+    shell.args = vmconf['vm']['swap']
     shell.privileged = true
   end
 
