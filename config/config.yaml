@@ -14,13 +14,17 @@ vm:
   # box: 'precise32'
   # box_url: 'http://files.vagrantup.com/precise32.box'
   memory: '1000'
-  swap: '1000'
+  swap: '500'
   ssh_port: 2222
   ssh_port_auto_correct: false
   web_port: 8080
   web_port_auto_correct: false
 # Autotool Configuration
 autotool::build_doc: true
+autotool::autolib::url: 'git://autolat.imn.htwk-leipzig.de/git/autolib'
+autotool::autolib::branch: 'release'
+autotool::tool::url: 'git://autolat.imn.htwk-leipzig.de/git/tool'
+autotool::tool::branch: 'classic-via-rpc'
 autotool::database::school_name: 'school'
 autotool::database::school_mail_suffix: 'localhost'
 autotool::database::minister_matrikel_number: '0'

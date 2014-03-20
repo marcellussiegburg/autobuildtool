@@ -1,5 +1,6 @@
 ###  (c) Marcellus Siegburg, 2013-2014, License: GPL
-class autotool::tool ($build_doc = $autotool::build_doc, $cgi_bin) {
+class autotool::tool ($build_doc = $autotool::build_doc, $cgi_bin,
+$url, $branch) {
   case $::architecture {
     x86_64: {
       $lib_dirs = '/usr/lib64/mysql'
@@ -10,7 +11,7 @@ class autotool::tool ($build_doc = $autotool::build_doc, $cgi_bin) {
   }
 
   exec { 'git-clone':
-    command => 'git clone git://autolat.imn.htwk-leipzig.de/git/tool /home/vagrant/tool',
+    command => "git clone ${url} /home/vagrant/tool",
     unless  => 'test -d /home/vagrant/tool',
   }
 
@@ -22,7 +23,7 @@ class autotool::tool ($build_doc = $autotool::build_doc, $cgi_bin) {
   }
 
   exec { 'checkout':
-    command => 'git checkout -f remotes/origin/classic-via-rpc',
+    command => "git checkout -f remotes/origin/${branch}",
     cwd     => '/home/vagrant/tool',
     require => Exec['git-clone'],
     onlyif  => 'test -d /home/vagrant/tool',
