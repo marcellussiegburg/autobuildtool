@@ -5,6 +5,7 @@ define cabalinstall (
   $file = "${cwd}/${name}.cabal",
   $unless = undef,
   $build_doc = true,
+  $maxruns = $::haskell::maxruns,
   $extra_lib_dirs = undef,
   $creates = '') {
   ### If $unless is undefined, assume that the package is installed in the following way:
@@ -33,8 +34,12 @@ define cabalinstall (
   }
   ### If the Version number has changed
   ## Install the .cabal file
+  $multirun = '/vagrant/modules/cabalinstall/files/multi-run.sh'
+  $outofmemory = '-e "ExitFailure 9" -e "ExitFailure 11"'
+  $cabal_install = "cabal install ${doc} ${libs}"
+
   exec { "cabal install ${title} (${name})":
-    command => "cabal install ${doc} ${libs}",
+    command => "bash '${multirun}' '${outofmemory}' '${cabal_install}' ${maxruns} 0",
     creates => $creates,
     cwd     => $cwd,
     onlyif  => $onlyif,

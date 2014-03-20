@@ -1,5 +1,5 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
-class haskell {
+class haskell ($maxruns = 1) {
   include haskell::ghc
   include haskell::cabal
   include haskell::cabal_install

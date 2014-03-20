@@ -36,3 +36,4 @@ autotool::database::minister_password: 'foobar'
 haskell::ghc::version: '7.6.3'
 haskell::cabal::version: '1.18.1.3'
 haskell::cabal_install::version: '1.18.0.2'
+haskell::maxruns: 10
