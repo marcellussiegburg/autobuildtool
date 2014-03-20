@@ -48,14 +48,20 @@ class haskell::cabal ($version) {
     onlyif  => "test -d ${path}"
   }
 
-  file { [$path, $archive]:
-    ensure  => absent,
-    force   => true,
-    recurse => true,
-    require =>
-      [ Exec['cabal configure'],
-        Exec['cabal make'],
-        Exec['cabal build'],
-        Exec['cabal install'] ],
+  file {
+    $archive:
+      ensure  => absent,
+      force   => true,
+      recurse => true,
+      require => Exec['cabal extract'];
+    $path:
+      ensure  => absent,
+      force   => true,
+      recurse => true,
+      require =>
+        [ Exec['cabal configure'],
+          Exec['cabal make'],
+          Exec['cabal build'],
+          Exec['cabal install'] ];
   }
 }

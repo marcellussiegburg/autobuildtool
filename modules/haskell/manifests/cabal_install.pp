@@ -37,7 +37,12 @@ class haskell::cabal_install ($zlib_dev, $version) {
       path    => '/usr/local/bin/cabal',
       target  => '/home/vagrant/.cabal/bin/cabal',
       require => Exec['cabal-install bootstrap'];
-    [$path, $archive]:
+    $archive:
+      ensure  => absent,
+      force   => true,
+      recurse => true,
+      require => Exec['cabal-install extract'];
+    $path:
       ensure  => absent,
       force   => true,
       recurse => true,

@@ -4,6 +4,12 @@ class haskell {
   include haskell::cabal
   include haskell::cabal_install
 
+  $cabal = 'cabal install --enable-documentation --haddock-hyperlink-source'
+  $alex = "${cabal} alex"
+  $happy = "${cabal} happy"
+  $hscolour = "${cabal} hscolour"
+  $haddock = "${cabal} haddock"
+
   Class['haskell::ghc'] -> Class['haskell::cabal']
   Class['haskell::ghc'] -> Class['haskell::cabal_install']
 
@@ -14,8 +20,9 @@ class haskell {
         Class['haskell::cabal_install'] ],
   }
 
-  exec { 'cabal install happy alex haddock hscolour':
-    command => 'cabal install --enable-documentation --haddock-hyperlink-source happy alex haddock hscolour',
+  Exec[$alex] -> Exec[$happy] -> Exec[$hscolour] -> Exec[$haddock]
+
+  exec { [$happy, $alex, $haddock, $hscolour]:
     require => Exec['cabal update'],
     unless  => 'ghc-pkg list haddock | grep haddock && ghc-pkg list hscolour | grep hscolour',
   }

@@ -117,7 +117,7 @@ class autotool::tool ($build_doc = $autotool::build_doc, $cgi_bin) {
 
   file { "${cgi_bin}/Super.cgi":
     ensure  => file,
-    require => Cabalinstall['server-implementation'],
+    require => Cabalinstall['db'],
     source  => '/home/vagrant/.cabal/bin/autotool-Super',
   }
 
