@@ -21,10 +21,3 @@ else
     rm -f $BASIC_LOG $FULL_LOG
     exit $EXIT
 fi
-
-
-
-
-
-
-

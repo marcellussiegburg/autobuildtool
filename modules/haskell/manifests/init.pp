@@ -1,14 +1,27 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
-class haskell ($maxruns = 1) {
+class haskell ($alex_version = undef, $happy_version = undef,
+$hscolour_version = undef, $haddock_version = undef, $maxruns = 1) {
   include haskell::ghc
   include haskell::cabal
   include haskell::cabal_install
 
   $cabal = 'cabal install --enable-documentation --haddock-hyperlink-source'
-  $alex = "${cabal} alex"
-  $happy = "${cabal} happy"
-  $hscolour = "${cabal} hscolour"
-  $haddock = "${cabal} haddock"
+  $alex = $alex_version ? {
+    undef   => "${cabal} alex",
+    default => "${cabal} alex-${alex_version}",
+  }
+  $happy = $happy_version ? {
+    undef   => "${cabal} happy",
+    default => "${cabal} happy-${happy_version}",
+  }
+  $hscolour = $hscolour_version ? {
+    undef   => "${cabal} hscolour",
+    default => "${cabal} hscolour-${hscolour_version}",
+  }
+  $haddock = $haddock_version ? {
+    undef   => "${cabal} haddock",
+    default => "${cabal} haddock-${haddock_version}",
+  }
 
   Class['haskell::ghc'] -> Class['haskell::cabal']
   Class['haskell::ghc'] -> Class['haskell::cabal_install']
