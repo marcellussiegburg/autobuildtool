@@ -19,13 +19,12 @@ $url, $branch) {
     command => 'git fetch',
     cwd     => '/home/vagrant/tool',
     require => Exec['git-clone'],
-    before  => Exec['checkout'],
   }
 
   exec { 'checkout':
-    command => "git checkout -f remotes/origin/${branch}",
+    command => "git branch -f ${branch} ${branch}; git checkout ${branch}",
     cwd     => '/home/vagrant/tool',
-    require => Exec['git-clone'],
+    require => Exec['git fetch tool'],
     onlyif  => 'test -d /home/vagrant/tool',
   }
 

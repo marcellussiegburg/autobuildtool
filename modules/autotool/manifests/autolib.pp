@@ -5,18 +5,17 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     unless  => 'test -d /home/vagrant/autolib',
   }
 
-  exec { 'checkout autolib':
-    command => "git checkout remotes/origin/${branch}",
-    cwd     => '/home/vagrant/autolib',
-    require => Exec['git clone autolib'],
-    unless  => 'cabal list --installed --simple-output | grep "autolib "',
-  }
-
   exec { 'git fetch autolib':
     command => 'git fetch',
     cwd     => '/home/vagrant/autolib',
     require => Exec['git clone autolib'],
-    before  => Exec['checkout autolib'],
+  }
+
+  exec { 'checkout autolib':
+    command => "git branch -f ${branch} ${branch}; git checkout ${branch}",
+    cwd     => '/home/vagrant/autolib',
+    require => Exec['git fetch autolib'],
+    unless  => 'cabal list --installed --simple-output | grep "autolib "',
   }
 
   cabalinstall { 'autolib-cgi':
