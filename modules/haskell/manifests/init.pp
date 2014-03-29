@@ -1,27 +1,12 @@
-###  (c) Marcellus Siegburg, 2013, License: GPL
-class haskell ($alex_version = undef, $happy_version = undef,
+###  (c) Marcellus Siegburg, 2013-2014, License: GPL
+class haskell ($alex_version = undef, $packages = undef, $happy_version = undef,
 $hscolour_version = undef, $haddock_version = undef, $maxruns = 1) {
   include haskell::ghc
   include haskell::cabal
   include haskell::cabal_install
 
-  $cabal = 'cabal install --enable-documentation --haddock-hyperlink-source'
-  $alex = $alex_version ? {
-    undef   => "${cabal} alex",
-    default => "${cabal} alex-${alex_version}",
-  }
-  $happy = $happy_version ? {
-    undef   => "${cabal} happy",
-    default => "${cabal} happy-${happy_version}",
-  }
-  $hscolour = $hscolour_version ? {
-    undef   => "${cabal} hscolour",
-    default => "${cabal} hscolour-${hscolour_version}",
-  }
-  $haddock = $haddock_version ? {
-    undef   => "${cabal} haddock",
-    default => "${cabal} haddock-${haddock_version}",
-  }
+  $unless_hscolour = 'ghc-pkg list hscolour | grep hscolour'
+  $extra_packages = join($packages, ' ')
 
   Class['haskell::ghc'] -> Class['haskell::cabal']
   Class['haskell::ghc'] -> Class['haskell::cabal_install']
@@ -33,10 +18,30 @@ $hscolour_version = undef, $haddock_version = undef, $maxruns = 1) {
         Class['haskell::cabal_install'] ],
   }
 
-  Exec[$alex] -> Exec[$happy] -> Exec[$hscolour] -> Exec[$haddock]
+  Exec['cabal update'] -> Cabalinstall::Hackage <| |>
+  Exec['cabal update'] -> Cabalinstall <| |>
 
-  exec { [$happy, $alex, $haddock, $hscolour]:
-    require => Exec['cabal update'],
-    unless  => 'ghc-pkg list haddock | grep haddock && ghc-pkg list hscolour | grep hscolour',
+  Cabalinstall::Hackage['alex'] -> Cabalinstall::Hackage['happy']
+  -> Cabalinstall::Hackage['hscolour'] -> Cabalinstall::Hackage['haddock']
+
+  cabalinstall::hackage {
+    'alex':
+      version => $alex_version,
+      unless  => $unless_hscolour;
+    'happy':
+      version => $happy_version,
+      unless  => $unless_hscolour;
+    'hscolour':
+      version => $hscolour_version,
+      unless  => $unless_hscolour;
+    'haddock':
+      version => $haddock_version,
+      unless  => 'ghc-pkg list haddock | grep haddock';
+  }
+
+  if ($packages != undef) {
+    cabalinstall::hackage { $extra_packages:
+      before => Cabalinstall::Hackage['alex'],
+    }
   }
 }

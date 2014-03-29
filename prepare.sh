@@ -36,4 +36,5 @@ esac
 swap $1
 chown vagrant:vagrant /home/vagrant
 service puppet stop
+puppet module install puppetlabs-stdlib
 exit 0
