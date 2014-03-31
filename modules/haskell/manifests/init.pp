@@ -7,7 +7,6 @@ $hscolour_version = undef, $haddock_version = undef, $maxruns = 1) {
 
   $ghc_unregister_user = '/vagrant/modules/haskell/files/ghc-unregister-user.sh'
   $unless_hscolour = 'ghc-pkg list hscolour | grep hscolour'
-  $extra_packages = join($packages, ' ')
 
   Class['haskell::ghc'] -> Class['haskell::cabal']
   Class['haskell::ghc'] -> Class['haskell::cabal_install']
@@ -41,17 +40,17 @@ $hscolour_version = undef, $haddock_version = undef, $maxruns = 1) {
   }
 
   if ($packages != undef) {
+    $extra_packages = join($packages, ' ')
     Class['haskell::cabal_install'] ~> Exec['ghc-pkg remove userdb packages']
 
     exec { 'ghc-pkg remove userdb packages':
       command     => "bash -Ec '${ghc_unregister_user}'",
       refreshonly => true,
-      require     => Exec['cabal update'],
+      require     => Cabalinstall::Hackage['haddock'],
     }
 
     cabalinstall::hackage { $extra_packages:
       require => Exec['ghc-pkg remove userdb packages'],
-      before  => Cabalinstall::Hackage['alex'],
     }
   }
 }
