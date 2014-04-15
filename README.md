@@ -3,9 +3,11 @@ Autobuildtool
 
 The autobuildtool will set up a virtual machine (virtualbox) and compile the latest version of autotool (<http://www.imn.htwk-leipzig.de/~waldmann/autotool/>) from scratch without the need of user interaction. After Setup it is possible to interact with the machine using vagrant.
 
-The source code of autotool is browsable at <http://autolat.imn.htwk-leipzig.de/gitweb/?p=tool;a=summary>
+The source code of autotool is browsable at <http://autolat.imn.htwk-leipzig.de/gitweb/?p=tool;a=summary>.
 
-The source code of autolib, a required module of autotool is browsable at <http://autolat.imn.htwk-leipzig.de/gitweb/?p=autolib;a=summary>
+The source code of autolib, a required module of autotool is browsable at <http://autolat.imn.htwk-leipzig.de/gitweb/?p=autolib;a=summary>.
+
+**If you come accross any errors please file a bug report here.**
 
 Contents
 --------
@@ -14,6 +16,9 @@ Contents
     2. [Preparation](#preparation)
     2. [Getting Started](#getting-started)
 2. [Configuration](#configuration)
+    1. [VM Configuration](#vm-config)
+    2. [Autootool Configuration](#autotool-config)
+    3. [Haskell Configuration](#haskell-config)
 3. [A break](#a-break)
     1. [Suspend](#suspend)
     2. [Halt](#halt)
@@ -73,7 +78,67 @@ Please note that the port number (8080) may vary if you edited your configuratio
 Configuration
 -------------
 
-see [`config/congig.yaml`](config/config.yaml)
+The main configuration file is [`config/congig.yaml`](config/config.yaml). You should edit this file if you want to change the behaviour of the build process or the underlying virtual machine. Basically there are three sections in the file. One section for [configuring the VM](#vm-config), one section for [Autotool Configuration](#autotool-config) and a section for [Haskell related configuration](#haskell-config).
+
+<a name=vm-config></a>
+### VM Configuration
+
+The VM Configuration section starts with `vm:` the following indented lines belong to the VM configuration.
+
+| parameter                | description |
+|:-------------------------|:------------|
+| `box:`                   | The name of the prepacked vagrant box to be used. If no box with the specified name exists on your machine it will be downloaded from the URL specified at `box_url:` |
+| `box_url:`               | The URL of the vagrant box to be used. Please note that only the predefined (maybe uncommented) values in [`config/congig.yaml`](config/config.yaml) are supported. Other boxes might not work or may need some additional configuration. |
+| `memory:`                | The size of the memory (RAM) of the virtual machine in MB. Please note: this is limited by the physical available memory on the host system. The host system itself will need some memory as well. A greater value might lead to shorter building times. |
+| `swap:`                  | The size of the swap space to be used. `'0'` means no swap space. This is useful, if the host system does not offer much memory and thus a lower value of `memory:` has to be specified. If the sum of `memory:` and `swap:` is too low the building process will fail. |
+| `ssh_port:`              | The port number to be used on the host system to connect to the VM via SSH. This will enable remote access to the VM, if the host firewall is configured accordingly. |
+| `ssh_port_auto_correct:` | If the SSH port number shall be changed to another available port number, if `ssh_port:` is not free on the host system. Note: if set the machine will be built even on port collisions, however `ssh_port:` is not assured if set. |
+| `web_port:`              | The port number to be used on the host system for HTTP on the virtual machine. The autotool will be available on the host system via this port. |
+| `web_port_auto_correct:` | If the HTTP port number shall be changed to another available port number, if `web_port:` is not free on the host system. Note: if set the machine will be built even on port collisions, however `web_port:` is not assured if set. |
+
+<a name=autotool-config></a>
+### Autotool Configuration
+
+| parameter                                       | description |
+|:------------------------------------------------|:------------|
+| `autotool::build_doc:`                          | If the documentation shall be built for autolib and tool. |
+| `autotool::autolib::build_doc:`                 | If the documentation shall be built for autolib, overwrites `autotool::build_doc` |
+| `autotool::autolib::url:`                       | The URL where to fetch autolib from, might also be set to a local path in the `autobuildtool` directory. |
+| `autotool::autolib::branch:`                    | The branch to use for building autolib, might also be specified to any specific commit or tag. |
+| `autotool::tool::build_doc:`                    | If the documentation shall be built for tool, overwrites `autotool::build_doc` |
+| `autotool::tool::url:`                          | The URL where to fetch tool from, might also be set to a local path in the `autobuildtool` directory. |
+| `autotool::tool::branch:`                       | The branch to use for building tool, might also be specified to any specific commit or tag. |
+| `autotool::database::school_name:`              | The database entry specifying the name of the institution which is using the autotool. |
+| `autotool::database::school_mail_suffix:`       | The database entry specifying the mail suffix email addresses of the school are using. |
+| `autotool::database::minister_matrikel_number:` | The database entry specifying the matrikel number (login information) of the initial autotool administrator. |
+| `autotool::database::minister_email:`           | The database entry specifying the email address of the initial autotool administrator. |
+| `autotool::database::minister_familyname:`      | The database entry specifying the family name of the initial autotool administrator. |
+| `autotool::database::minister_name:`            | The database entry specifying the name of the initial autotool administrator. |
+| `autotool::database::minister_password:`        | The initial autotool administrator password to be stored encrypted in the database. |
+
+<a name=haskell-config></a>
+### Haskell Configuration
+
+
+| parameter                          | description |
+|:-----------------------------------|:------------|
+| `haskell::ghc::version:`           | The GHC version to be installed. Might be any release listed at <http://www.haskell.org/ghc/>. |
+| `haskell::cabal::version:`         | The cabal version to be installed. Might be any release (but latest) listed at <http://www.haskell.org/cabal/release/>. |
+| `haskell::cabal_install::version:` | The cabal-install version to be installed. Might be any release (but latest) listed at <http://www.haskell.org/cabal/release/>. |
+| `haskell::alex_version:`           | The alex version to be installed. Might be any version listed at <http://hackage.haskell.org/package/alex>. |
+| `haskell::haddock_version:`        | The haddock version to be installed. Might be any version listed at <http://hackage.haskell.org/package/haddock>. |
+| `haskell::happy_version:`          | The happy version to be installed. Might be any version listed at <http://hackage.haskell.org/package/happy>. |
+| `haskell::hscolour_version:`       | The hscolour version to be installed. Might be any version listed at <http://hackage.haskell.org/package/hscolour>. |
+| `haskell::maxruns:`                | The maximum number of cabal-install runs that shall be executed, if error messages occur that indicate low memory (useful if `memory:` and `swap:` ([see VM Configuration)](#vm-config)) have got low values).
+| `haskell::packages:`               | Additional hackage cabal packages or specific hackage cabal packages to be installed *before* every other package. Might be useful if older versions of autotool shall be installed. |
+
+Example of specifying additional hackage cabal packages:
+
+```YAML
+haskell::packages:
+ - containers-0.4.0.0
+ - html
+```
 
 <a name=stop-the-vm></a>
 Stop the VM
