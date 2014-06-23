@@ -21,6 +21,7 @@ vm:
   web_port_auto_correct: false
 # Autotool Configuration
 autotool::build_doc: true
+autotool::enable_highscore: true
 autotool::autolib::url: 'git://autolat.imn.htwk-leipzig.de/git/autolib'
 autotool::autolib::branch: 'release'
 autotool::tool::url: 'git://autolat.imn.htwk-leipzig.de/git/tool'

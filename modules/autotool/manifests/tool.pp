@@ -1,6 +1,7 @@
 ###  (c) Marcellus Siegburg, 2013-2014, License: GPL
-class autotool::tool ($build_doc = $autotool::build_doc, $cgi_bin,
-$url, $branch) {
+class autotool::tool ($build_doc = $autotool::build_doc, $url, $branch) {
+  $cgi_bin = $::autotool::cgi_bin
+  $html_dir = $::autotool::html_dir
   case $::architecture {
     x86_64: {
       $lib_dirs = '/usr/lib64/mysql'
@@ -111,14 +112,30 @@ $url, $branch) {
 
   file { "${cgi_bin}/autotool.cgi":
     ensure  => file,
+    owner   => 'apache',
+    group   => 'apache',
     require => Cabalinstall['server-implementation'],
     source  => '/home/vagrant/.cabal/bin/autotool.cgi',
   }
 
-  file { "${cgi_bin}/Super.cgi":
-    ensure  => file,
-    require => Cabalinstall['db'],
-    source  => '/home/vagrant/.cabal/bin/autotool-Super',
+  file {
+    "${cgi_bin}/Super.cgi":
+      ensure  => file,
+      require => Cabalinstall['db'],
+      owner   => 'apache',
+      group   => 'apache',
+      source  => '/home/vagrant/.cabal/bin/autotool-Super';
+    "${cgi_bin}/Trial.cgi":
+      ensure  => file,
+      require => Cabalinstall['db'],
+      owner   => 'apache',
+      group   => 'apache',
+      source  => '/home/vagrant/.cabal/bin/autotool-Trial';
+    [$html_dir, $cgi_bin]:
+      ensure  => directory,
+      require => Cabalinstall['db'],
+      owner   => 'apache',
+      group   => 'apache';
   }
 
   # exec { 'Prepare client':

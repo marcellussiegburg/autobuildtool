@@ -1,6 +1,6 @@
 ---
-autotool::doc::html_dir: '/var/www/html'
-autotool::tool::cgi_bin: '/var/www/cgi-bin'
+autotool::html_dir: '/var/www/html'
+autotool::cgi_bin: '/var/www/cgi-bin'
 apache::apache: 'httpd'
 haskell::cabal_install::zlib_dev: 'zlib-devel'
 haskell::ghc::libgmp: 'gmp'

@@ -1,5 +1,6 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
-class autotool::doc ($relative_links = true, $domain = 'http://localhost', $port = '80', $html_dir) {
+class autotool::doc ($relative_links = true, $domain = 'http://localhost', $port = '80') {
+  $html_dir = $::autotool::html_dir
   $abs_to_rel = '/vagrant/modules/autotool/files/abs2rel.sh'
   if $relative_links {
     $webroot = $html_dir
@@ -31,6 +32,8 @@ class autotool::doc ($relative_links = true, $domain = 'http://localhost', $port
   file {
     [$target_user, $target_system]:
       ensure => directory,
+      owner  => 'apache',
+      group  => 'apache',
   }
 
   exec {

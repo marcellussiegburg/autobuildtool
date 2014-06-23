@@ -102,6 +102,7 @@ The VM Configuration section starts with `vm:` the following indented lines belo
 | parameter                                       | description |
 |:------------------------------------------------|:------------|
 | `autotool::build_doc:`                          | If the documentation shall be built for autolib and tool. |
+| `autotool::enable_highscore`                    | If the highscore shall be enabled and calculated by a cron job. |
 | `autotool::autolib::build_doc:`                 | If the documentation shall be built for autolib, overwrites `autotool::build_doc` |
 | `autotool::autolib::url:`                       | The URL where to fetch autolib from, might also be set to a local path in the `autobuildtool` directory. |
 | `autotool::autolib::branch:`                    | The branch to use for building autolib, might also be specified to any specific commit or tag. |
