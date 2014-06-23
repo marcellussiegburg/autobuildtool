@@ -36,6 +36,7 @@ $unless = undef, $version = undef) {
       command => "bash -Ec '${remove}'",
       onlyif  => $onlyif,
       unless  => $unless,
+      before  => Exec["cabal install ${title}"],
       returns => [0, 1],
     }
   }
