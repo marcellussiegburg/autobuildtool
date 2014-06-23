@@ -3,9 +3,16 @@ class haskell::ghc ($libgmp, $libgmp_dev, $version) {
   $versionname = "ghc-${version}"
   # $hardwaremodel is either 'i386' or 'x86_64'
   $hardwaremodel = inline_template("<%= %x{uname -i | tr -d '\n'} %>")
+  $osversion = $version ? {
+    /^7.8.\d$/ => $osfamily ? {
+      'redhat' => '-centos65',
+      'debian' => '-deb7',
+    },
+    default    => '',
+  }
   $path = "/home/vagrant/${versionname}"
-  $archive_name = "${versionname}-${hardwaremodel}-unknown-linux.tar.bz2"
-  $archive = "/home/vagrant/${versionname}-${hardwaremodel}-unknown-linux.tar.bz2"
+  $archive_name = "${versionname}-${hardwaremodel}-unknown-linux${osversion}.tar.bz2"
+  $archive = "/home/vagrant/${archive_name}"
 
   exec { 'ghc download':
     command => "wget http://www.haskell.org/ghc/dist/${version}/${archive_name}",

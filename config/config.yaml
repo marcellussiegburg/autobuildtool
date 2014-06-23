@@ -13,8 +13,8 @@ vm:
   # # 32-bit Ubuntu
   # box: 'precise32'
   # box_url: 'http://files.vagrantup.com/precise32.box'
-  memory: '1000'
-  swap: '500'
+  memory: '2000'
+  swap: '1000'
   ssh_port: 2222
   ssh_port_auto_correct: false
   web_port: 8080
@@ -23,9 +23,9 @@ vm:
 autotool::build_doc: true
 autotool::enable_highscore: true
 autotool::autolib::url: 'git://autolat.imn.htwk-leipzig.de/git/autolib'
-autotool::autolib::branch: 'release'
-autotool::tool::url: 'git://autolat.imn.htwk-leipzig.de/git/tool'
-autotool::tool::branch: 'classic-via-rpc'
+autotool::autolib::branch: 'for-ghc-7.8'
+autotool::tool::url: 'https://github.com/marcellussiegburg/autotool.git'
+autotool::tool::branch: 'for-ghc-7.8'
 autotool::database::school_name: 'school'
 autotool::database::school_mail_suffix: 'localhost'
 autotool::database::minister_matrikel_number: '0'
@@ -34,8 +34,14 @@ autotool::database::minister_familyname: 'Mustermann'
 autotool::database::minister_name: 'Max'
 autotool::database::minister_password: 'foobar'
 # Haskell Configuration
-haskell::ghc::version: '7.6.3'
-haskell::cabal::version: '1.18.1.3'
-haskell::cabal_install::version: '1.18.0.2'
-haskell::haddock_version: '2.13.2.1'
+haskell::ghc::version: '7.8.2'
+haskell::cabal::version: '1.20.0.1'
+haskell::cabal_install::version: '1.20.0.2'
 haskell::maxruns: 10
+haskell::packages:
+ - haskell-src-exts-1.15.0.1
+ - text-0.11.3.1
+ - mtl-2.1.3.1
+haskell::git_packages:
+ 'cgi':
+   url: 'https://github.com/jhenahan/haskell-cgi'

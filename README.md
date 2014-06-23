@@ -83,55 +83,56 @@ The main configuration file is [`config/congig.yaml`](config/config.yaml). You s
 <a name=vm-config></a>
 ### VM Configuration
 
-The VM Configuration section starts with `vm:` the following indented lines belong to the VM configuration.
+The VM Configuration section starts with `vm` the following indented lines belong to the VM configuration.
 
-| parameter                | description |
-|:-------------------------|:------------|
-| `box:`                   | The name of the prepacked vagrant box to be used. If no box with the specified name exists on your machine it will be downloaded from the URL specified at `box_url:` |
-| `box_url:`               | The URL of the vagrant box to be used. Please note that only the predefined (maybe uncommented) values in [`config/congig.yaml`](config/config.yaml) are supported. Other boxes might not work or may need some additional configuration. |
-| `memory:`                | The size of the memory (RAM) of the virtual machine in MB. Please note: this is limited by the physical available memory on the host system. The host system itself will need some memory as well. A greater value might lead to shorter building times. |
-| `swap:`                  | The size of the swap space to be used. `'0'` means no swap space. This is useful, if the host system does not offer much memory and thus a lower value of `memory:` has to be specified. If the sum of `memory:` and `swap:` is too low the building process will fail. |
-| `ssh_port:`              | The port number to be used on the host system to connect to the VM via SSH. This will enable remote access to the VM, if the host firewall is configured accordingly. |
-| `ssh_port_auto_correct:` | If the SSH port number shall be changed to another available port number, if `ssh_port:` is not free on the host system. Note: if set the machine will be built even on port collisions, however `ssh_port:` is not assured if set. |
-| `web_port:`              | The port number to be used on the host system for HTTP on the virtual machine. The autotool will be available on the host system via this port. |
-| `web_port_auto_correct:` | If the HTTP port number shall be changed to another available port number, if `web_port:` is not free on the host system. Note: if set the machine will be built even on port collisions, however `web_port:` is not assured if set. |
+| parameter               | description |
+|:------------------------|:------------|
+| `box`                   | The name of the prepacked vagrant box to be used. If no box with the specified name exists on your machine it will be downloaded from the URL specified at `box_url` |
+| `box_url`               | The URL of the vagrant box to be used. Please note that only the predefined (maybe uncommented) values in [`config/congig.yaml`](config/config.yaml) are supported. Other boxes might not work or may need some additional configuration. |
+| `memory`                | The size of the memory (RAM) of the virtual machine in MB. Please note: this is limited by the physical available memory on the host system. The host system itself will need some memory as well. A greater value might lead to shorter building times. |
+| `swap`                  | The size of the swap space to be used. `'0'` means no swap space. This is useful, if the host system does not offer much memory and thus a lower value of `memory` has to be specified. If the sum of `memory` and `swap` is too low the building process will fail. |
+| `ssh_port`              | The port number to be used on the host system to connect to the VM via SSH. This will enable remote access to the VM, if the host firewall is configured accordingly. |
+| `ssh_port_auto_correct` | If the SSH port number shall be changed to another available port number, if `ssh_port` is not free on the host system. Note: if set the machine will be built even on port collisions, however `ssh_port` is not assured if set. |
+| `web_port`              | The port number to be used on the host system for HTTP on the virtual machine. The autotool will be available on the host system via this port. |
+| `web_port_auto_correct` | If the HTTP port number shall be changed to another available port number, if `web_port` is not free on the host system. Note: if set the machine will be built even on port collisions, however `web_port` is not assured if set. |
 
 <a name=autotool-config></a>
 ### Autotool Configuration
 
-| parameter                                       | description |
-|:------------------------------------------------|:------------|
-| `autotool::build_doc:`                          | If the documentation shall be built for autolib and tool. |
-| `autotool::enable_highscore`                    | If the highscore shall be enabled and calculated by a cron job. |
-| `autotool::autolib::build_doc:`                 | If the documentation shall be built for autolib, overwrites `autotool::build_doc` |
-| `autotool::autolib::url:`                       | The URL where to fetch autolib from, might also be set to a local path in the `autobuildtool` directory. |
-| `autotool::autolib::branch:`                    | The branch to use for building autolib, might also be specified to any specific commit or tag. |
-| `autotool::tool::build_doc:`                    | If the documentation shall be built for tool, overwrites `autotool::build_doc` |
-| `autotool::tool::url:`                          | The URL where to fetch tool from, might also be set to a local path in the `autobuildtool` directory. |
-| `autotool::tool::branch:`                       | The branch to use for building tool, might also be specified to any specific commit or tag. |
-| `autotool::database::school_name:`              | The database entry specifying the name of the institution which is using the autotool. |
-| `autotool::database::school_mail_suffix:`       | The database entry specifying the mail suffix email addresses of the school are using. |
-| `autotool::database::minister_matrikel_number:` | The database entry specifying the matrikel number (login information) of the initial autotool administrator. |
-| `autotool::database::minister_email:`           | The database entry specifying the email address of the initial autotool administrator. |
-| `autotool::database::minister_familyname:`      | The database entry specifying the family name of the initial autotool administrator. |
-| `autotool::database::minister_name:`            | The database entry specifying the name of the initial autotool administrator. |
-| `autotool::database::minister_password:`        | The initial autotool administrator password to be stored encrypted in the database. |
+| parameter                                      | description |
+|:-----------------------------------------------|:------------|
+| `autotool::build_doc`                          | If the documentation shall be built for autolib and tool. |
+| `autotool::enable_highscore`                   | If the highscore shall be enabled and calculated by a cron job. |
+| `autotool::autolib::build_doc`                 | If the documentation shall be built for autolib, overwrites `autotool::build_doc` |
+| `autotool::autolib::url`                       | The URL where to fetch autolib from, might also be set to a local path in the `autobuildtool` directory. |
+| `autotool::autolib::branch`                    | The branch to use for building autolib, might also be specified to any specific commit or tag. |
+| `autotool::tool::build_doc`                    | If the documentation shall be built for tool, overwrites `autotool::build_doc` |
+| `autotool::tool::url`                          | The URL where to fetch tool from, might also be set to a local path in the `autobuildtool` directory. |
+| `autotool::tool::branch`                       | The branch to use for building tool, might also be specified to any specific commit or tag. |
+| `autotool::database::school_name`              | The database entry specifying the name of the institution which is using the autotool. |
+| `autotool::database::school_mail_suffix`       | The database entry specifying the mail suffix email addresses of the school are using. |
+| `autotool::database::minister_matrikel_number` | The database entry specifying the matrikel number (login information) of the initial autotool administrator. |
+| `autotool::database::minister_email`           | The database entry specifying the email address of the initial autotool administrator. |
+| `autotool::database::minister_familyname`      | The database entry specifying the family name of the initial autotool administrator. |
+| `autotool::database::minister_name`            | The database entry specifying the name of the initial autotool administrator. |
+| `autotool::database::minister_password`        | The initial autotool administrator password to be stored encrypted in the database. |
 
 <a name=haskell-config></a>
 ### Haskell Configuration
 
 
-| parameter                          | description |
-|:-----------------------------------|:------------|
-| `haskell::ghc::version:`           | The GHC version to be installed. Might be any release listed at <http://www.haskell.org/ghc/>. |
-| `haskell::cabal::version:`         | The cabal version to be installed. Might be any release (but latest) listed at <http://www.haskell.org/cabal/release/>. |
-| `haskell::cabal_install::version:` | The cabal-install version to be installed. Might be any release (but latest) listed at <http://www.haskell.org/cabal/release/>. |
-| `haskell::alex_version:`           | The alex version to be installed. Might be any version listed at <http://hackage.haskell.org/package/alex>. |
-| `haskell::haddock_version:`        | The haddock version to be installed. Might be any version listed at <http://hackage.haskell.org/package/haddock>. |
-| `haskell::happy_version:`          | The happy version to be installed. Might be any version listed at <http://hackage.haskell.org/package/happy>. |
-| `haskell::hscolour_version:`       | The hscolour version to be installed. Might be any version listed at <http://hackage.haskell.org/package/hscolour>. |
-| `haskell::maxruns:`                | The maximum number of cabal-install runs that shall be executed, if error messages occur that indicate low memory (useful if `memory:` and `swap:` ([see VM Configuration)](#vm-config)) have got low values).
-| `haskell::packages:`               | Additional hackage cabal packages or specific hackage cabal packages to be installed *before* every other package. Might be useful if older versions of autotool shall be installed. |
+| parameter                         | description |
+|:----------------------------------|:------------|
+| `haskell::ghc::version`           | The GHC version to be installed. Might be any release listed at <http://www.haskell.org/ghc/>. |
+| `haskell::cabal::version`         | The cabal version to be installed. Might be any release (but latest) listed at <http://www.haskell.org/cabal/release/>. |
+| `haskell::cabal_install::version` | The cabal-install version to be installed. Might be any release (but latest) listed at <http://www.haskell.org/cabal/release/>. |
+| `haskell::alex_version`           | The alex version to be installed. Might be any version listed at <http://hackage.haskell.org/package/alex>. |
+| `haskell::haddock_version`        | The haddock version to be installed. Might be any version listed at <http://hackage.haskell.org/package/haddock>. |
+| `haskell::happy_version`          | The happy version to be installed. Might be any version listed at <http://hackage.haskell.org/package/happy>. |
+| `haskell::hscolour_version`       | The hscolour version to be installed. Might be any version listed at <http://hackage.haskell.org/package/hscolour>. |
+| `haskell::maxruns`                | The maximum number of cabal-install runs that shall be executed, if error messages occur that indicate low memory (useful if `memory` and `swap` ([see VM Configuration)](#vm-config)) have got low values).
+| `haskell::packages`               | Additional hackage cabal packages or specific hackage cabal packages to be installed *before* every other package. Might be useful if older versions of autotool shall be installed. |
+| `haskell::git_packages`           | Additional cabal packages from certain git-repository to be installed *before* every other package. Might be useful if cabal version is too old or broken. |
 
 Example of specifying additional hackage cabal packages:
 
@@ -141,6 +142,25 @@ haskell::packages:
  - html
 ```
 
+Example of specifying additional git cabal packages:
+```YAML
+haskell::git_packages:
+  'git':
+    url: 'https://github.com/jhenahan/haskell-cgi'
+    branch: 'master'
+    version: '3001.2.8.5'
+```
+
+Git cabal packages are specified as hashes, where the key is the name of the package and the value is a hash of attributes. These attributes are optional, but `url` is required. The attributes are:
+
+| key              | description |
+|:-----------------|:------------|
+| `url`            | The url to load the packages git repository from. |
+| `branch`         | The branch, commit or tag to checkout the git repository. |
+| `version`        | The version of the package that will be installed (it will not be checked, if the repositories version does match the specified). |
+| `extra_lib_dirs` | The path to check for additional library files while compiling the cabal package. |
+
+
 <a name=stop-the-vm></a>
 Stop the VM
 -----------
@@ -149,7 +169,7 @@ If you do not require the machine to run now, but want to continue to use it lat
 - suspend
 - halt
 
-To continue aftwerwards simply continue by using
+To continue afterwards simply continue by using
 
 ```bash
 vagrant up

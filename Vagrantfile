@@ -32,6 +32,7 @@ Vagrant.configure("2") do |config|
     puppet.options = ["--user", "vagrant",
                       "--no-daemonize",
                       "--detailed-exitcodes",
+                      "--parser", "future",
                       "--verbose",
                       "--logdest", "console",
                       "--logdest", "/vagrant/build.log"]

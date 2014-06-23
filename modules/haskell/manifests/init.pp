@@ -1,6 +1,7 @@
 ###  (c) Marcellus Siegburg, 2013-2014, License: GPL
-class haskell ($alex_version = undef, $packages = undef, $happy_version = undef,
-$hscolour_version = undef, $haddock_version = undef, $maxruns = 1) {
+class haskell ($alex_version = undef, $packages = undef, $git_packages = undef,
+$happy_version = undef, $hscolour_version = undef, $haddock_version = undef,
+$maxruns = 1) {
   include haskell::ghc
   include haskell::cabal
   include haskell::cabal_install
@@ -19,6 +20,7 @@ $hscolour_version = undef, $haddock_version = undef, $maxruns = 1) {
   }
 
   Exec['cabal update'] -> Cabalinstall::Hackage <| |>
+  Exec['cabal update'] -> Cabalinstall::Git <| |>
   Exec['cabal update'] -> Cabalinstall <| |>
 
   Cabalinstall::Hackage['alex'] -> Cabalinstall::Hackage['happy']
@@ -39,18 +41,32 @@ $hscolour_version = undef, $haddock_version = undef, $maxruns = 1) {
       unless  => 'ghc-pkg list haddock | grep haddock';
   }
 
+  Class['haskell::cabal_install'] ~> Exec['ghc-pkg remove user packages']
+
+  exec { 'ghc-pkg remove user packages':
+    command     => "bash -Ec '${ghc_unregister_user}'",
+    refreshonly => true,
+    require     => Cabalinstall::Hackage['haddock'],
+  }
+
   if ($packages != undef) {
     $extra_packages = join($packages, ' ')
-    Class['haskell::cabal_install'] ~> Exec['ghc-pkg remove userdb packages']
-
-    exec { 'ghc-pkg remove userdb packages':
-      command     => "bash -Ec '${ghc_unregister_user}'",
-      refreshonly => true,
-      require     => Cabalinstall::Hackage['haddock'],
-    }
 
     cabalinstall::hackage { $extra_packages:
-      require => Exec['ghc-pkg remove userdb packages'],
+      require => Exec['ghc-pkg remove user packages'],
+    }
+
+    if ($git_packages != undef) {
+      map($git_packages) |$git| {
+        Cabalinstall::Hackage[$extra_packages] -> Cabalinstall::Git[$git[0]]
+      }
+    }
+  }
+
+  if ($git_packages != undef) {
+    create_resources(cabalinstall::git, $git_packages)
+    map($git_packages) |$git| {
+      Exec['ghc-pkg remove user packages'] -> Cabalinstall::Git[$git[0]]
     }
   }
 }

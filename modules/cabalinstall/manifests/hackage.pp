@@ -1,6 +1,6 @@
 ###  (c) Marcellus Siegburg, 2014, License: GPL
 define cabalinstall::hackage ($build_doc = true, $keep = false,
-$extra_lib_dirs = '', $maxruns = $::haskell::maxruns, $onlyif = undef,
+$extra_lib_dirs = undef, $maxruns = $::haskell::maxruns, $onlyif = undef,
 $unless = undef, $version = undef) {
   $package = $version ? {
     undef    => $name,
