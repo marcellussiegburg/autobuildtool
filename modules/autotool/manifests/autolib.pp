@@ -11,17 +11,24 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     require => Exec['git clone autolib'],
   }
 
-  exec { 'checkout autolib':
+  exec { 'git checkout autolib':
     command => "git branch -f ${branch} ${branch}; git checkout ${branch}",
     cwd     => '/home/vagrant/autolib',
     require => Exec['git fetch autolib'],
-    unless  => 'cabal list --installed --simple-output | grep "autolib "',
+    onlyif  => 'test -d /home/vagrant/autolib',
+  }
+
+  exec { 'git merge autolib':
+    command => "git merge --ff remotes/origin/${branch} || git merge --ff ${branch}",
+    cwd     => '/home/vagrant/autolib',
+    require => Exec['git checkout autolib'],
+    onlyif  => 'test -d /home/vagrant/autolib',
   }
 
   cabalinstall { 'autolib-cgi':
     cwd       => '/home/vagrant/autolib/cgi',
     build_doc => $build_doc,
-    require   => Exec['checkout autolib'],
+    require   => Exec['git merge autolib'],
     onlyif    => 'test -d /home/vagrant/autolib',
     unless    => 'cabal list --installed --simple-output | grep autolib-cgi',
   }
@@ -29,7 +36,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
   cabalinstall { 'autolib-derive':
     cwd       => '/home/vagrant/autolib/derive',
     build_doc => $build_doc,
-    require   => Exec['checkout autolib'],
+    require   => Exec['git merge autolib'],
     onlyif    => 'test -d /home/vagrant/autolib/derive',
     unless    => 'cabal list --installed --simple-output | grep autolib-derive',
   }
@@ -38,7 +45,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/todoc',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-derive'] ],
     onlyif    => 'test -d /home/vagrant/autolib/todoc',
     unless    => 'cabal list --installed --simple-output | grep autolib-todoc',
@@ -48,7 +55,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/reader',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-derive'],
         Cabalinstall['autolib-todoc'] ],
     onlyif    => 'test -d /home/vagrant/autolib/reader',
@@ -59,7 +66,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/data',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'] ],
     onlyif    => 'test -d /home/vagrant/autolib/data',
@@ -70,7 +77,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/util',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
         Cabalinstall['autolib-data'] ],
@@ -82,7 +89,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/output',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-todoc'] ],
     onlyif    => 'test -d /home/vagrant/autolib/output',
     unless    => 'cabal list --installed --simple-output | grep autolib-output',
@@ -92,7 +99,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/reporter',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
         Cabalinstall['autolib-data'],
@@ -105,7 +112,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/dot',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
         Cabalinstall['autolib-data'],
@@ -120,7 +127,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/algorithm',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-data'] ],
     onlyif    => 'test -d /home/vagrant/autolib/algorithm',
     unless    => 'cabal list --installed --simple-output | grep autolib-algorithm',
@@ -130,7 +137,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/relation',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
         Cabalinstall['autolib-data'],
@@ -144,7 +151,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/fa',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
         Cabalinstall['autolib-data'],
@@ -160,7 +167,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/genetic',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-data'],
         Cabalinstall['autolib-util'] ],
@@ -172,7 +179,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/tex',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-todoc'] ],
     onlyif    => 'test -d /home/vagrant/autolib/tex',
     unless    => 'cabal list --installed --simple-output | grep autolib-tex',
@@ -182,7 +189,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/rewriting',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
         Cabalinstall['autolib-data'],
@@ -199,7 +206,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/transport',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-derive'] ],
     onlyif    => 'test -d /home/vagrant/autolib/transport',
     unless    => 'cabal list --installed --simple-output | grep autolib-transport',
@@ -209,7 +216,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/graph',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
         Cabalinstall['autolib-data'],
@@ -224,7 +231,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/exp',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-reader'],
         Cabalinstall['autolib-data'],
         Cabalinstall['autolib-util'],
@@ -238,7 +245,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/fta',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
         Cabalinstall['autolib-data'],
@@ -256,7 +263,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/foa',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
         Cabalinstall['autolib-data'],
@@ -275,7 +282,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/logic',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
         Cabalinstall['autolib-util'],
@@ -288,7 +295,7 @@ class autotool::autolib ($build_doc = $autotool::build_doc, $url, $branch) {
     cwd       => '/home/vagrant/autolib/lib',
     build_doc => $build_doc,
     require   =>
-      [ Exec['checkout autolib'],
+      [ Exec['git merge autolib'],
         Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-tex'],
         Cabalinstall['autolib-reader'],

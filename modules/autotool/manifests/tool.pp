@@ -11,7 +11,7 @@ class autotool::tool ($build_doc = $autotool::build_doc, $url, $branch) {
     }
   }
 
-  exec { 'git-clone':
+  exec { 'git clone tool':
     command => "git clone ${url} /home/vagrant/tool",
     unless  => 'test -d /home/vagrant/tool',
   }
@@ -19,13 +19,21 @@ class autotool::tool ($build_doc = $autotool::build_doc, $url, $branch) {
   exec { 'git fetch tool':
     command => 'git fetch',
     cwd     => '/home/vagrant/tool',
-    require => Exec['git-clone'],
+    require => Exec['git clone tool'],
+    onlyif  => 'test -d /home/vagrant/tool',
   }
 
-  exec { 'checkout':
+  exec { 'git checkout tool':
     command => "git branch -f ${branch} ${branch}; git checkout ${branch}",
     cwd     => '/home/vagrant/tool',
     require => Exec['git fetch tool'],
+    onlyif  => 'test -d /home/vagrant/tool',
+  }
+
+  exec { 'git merge tool':
+    command => "git merge --ff remotes/origin/${branch} || git merge --ff ${branch}",
+    cwd     => '/home/vagrant/tool',
+    require => Exec['git checkout tool'],
     onlyif  => 'test -d /home/vagrant/tool',
   }
 
@@ -33,7 +41,7 @@ class autotool::tool ($build_doc = $autotool::build_doc, $url, $branch) {
     name      => 'autotool-interface',
     cwd       => '/home/vagrant/tool/interface',
     build_doc => $build_doc,
-    require   => Exec['checkout'],
+    require   => Exec['git merge tool'],
     onlyif    => 'test -d /home/vagrant/tool',
   }
 
@@ -49,14 +57,14 @@ class autotool::tool ($build_doc = $autotool::build_doc, $url, $branch) {
     ensure  => link,
     name    => '/home/vagrant/tool/db/src/Mysqlconnect.hs',
     target  => '/home/vagrant/tool/db/src/Mysqlconnect.hs.example',
-    require => Exec['checkout'],
+    require => Exec['git checkout tool'],
   }
 
   file { 'Default.hs link':
     ensure  => link,
     name    => '/home/vagrant/tool/db/src/Default.hs',
     target  => '/home/vagrant/tool/db/src/Default.hs.sample',
-    require => Exec['checkout'],
+    require => Exec['git checkout tool'],
   }
 
   cabalinstall { 'db':
@@ -96,7 +104,7 @@ class autotool::tool ($build_doc = $autotool::build_doc, $url, $branch) {
     ensure  => link,
     name    => '/home/vagrant/tool/server-implementation/src/Config.hs',
     target  => '/home/vagrant/tool/server-implementation/src/Config.hs.sample',
-    require => Exec['checkout'],
+    require => Exec['git checkout tool'],
   }
 
   cabalinstall { 'server-implementation':
@@ -141,7 +149,7 @@ class autotool::tool ($build_doc = $autotool::build_doc, $url, $branch) {
   # exec { 'Prepare client':
   #   command => ['sed "s/\\-\\- autotool-server/autotool-server-interface/" autotool-client.cabal > tmp.cabal; cat tmp.cabal > autotool-client.cabal; rm tmp.cabal'],
   #   cwd     => '/home/vagrant/tool/client',
-  #   require => Exec['checkout'],
+  #   require => Exec['git checkout tool'],
   #   onlyif  => 'test -d /home/vagrant/tool',
   # }
 
@@ -152,7 +160,7 @@ class autotool::tool ($build_doc = $autotool::build_doc, $url, $branch) {
   #   build_doc => $build_doc,
   #   file      => "$cwd/autotool-client.cabal",
   #   require   =>
-  #     [ Exec['checkout'],
+  #     [ Exec['git checkout tool'],
   #       Cabalinstall['server-interface'],
   #       Exec['Prepare client'] ],
   #   onlyif    => 'test -d /home/vagrant/tool',
