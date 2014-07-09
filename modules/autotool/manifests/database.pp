@@ -14,17 +14,10 @@ $minister_name, $minister_password) {
     unless  => 'echo "show databases;" | mysql -u root | grep ^autoan\$',
   }
 
-  exec { 'Prepare TABLES file':
-    command => 'sed "s/TYPE/ENGINE/" /home/vagrant/tool/TABLES > /home/vagrant/TABLES',
-    unless  => 'test -f /home/vagrant/TABLES',
-  }
-
   exec { 'Create Tables':
-    command => "mysql -u ${user} -p${password} autoan < /home/vagrant/TABLES",
+    command => "mysql -u ${user} -p${password} autoan < /home/vagrant/tool/db/tables.sql",
     user    => 'root',
-    require =>
-      [ Exec['Prepare TABLES file'],
-        Exec['Create Database'] ],
+    require => Exec['Create Database'],
     unless  => 'echo "use autoan; show tables;" | mysql -u root | grep ^aufgabe$',
   }
 
