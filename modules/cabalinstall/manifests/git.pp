@@ -17,7 +17,7 @@ $unless = undef, $version = undef, $url = undef) {
     $libs = "--extra-lib-dirs=${extra_lib_dirs}"
   }
   if ($unless == undef) {
-    $unl = "ghc-pkg list ${package} | grep ' '${package}"
+    $unl = "ghc-pkg list ${package} | grep \" \"${package}"
   } else {
     $unl = $unless
   }
@@ -28,7 +28,7 @@ $unless = undef, $version = undef, $url = undef) {
   $remove = "for i in \$(${other_versions}); do ghc-pkg unregister \$i; done"
   exec { "git clone ${title}":
     command => "git clone ${url} /home/vagrant/${package}",
-    unless  => "test -d /home/vagrant/${package}",
+    creates => "/home/vagrant/${package}",
   }
 
   exec { "git fetch ${package}":
@@ -44,7 +44,7 @@ $unless = undef, $version = undef, $url = undef) {
     cwd     => "/home/vagrant/${package}",
     onlyif  => "test -d /home/vagrant/${package}",
     unless  => $unless,
-    require => Exec["git fetch ${title}"],
+    require => Exec["git fetch ${package}"],
   }
   
   exec { "cabal install ${package}":
@@ -52,14 +52,14 @@ $unless = undef, $version = undef, $url = undef) {
     cwd     => "/home/vagrant/${package}",
     onlyif  => "test -d /home/vagrant/${package}",
     unless  => $unless,
-    require => Exec["checkout ${title}"],
+    require => Exec["checkout ${package}"],
   }
   if ($keep == false) {
     exec { "ghc-pkg unregister ${package}":
       command => "bash -Ec '${remove}'",
       onlyif  => "test -d /home/vagrant/${package}",
       unless  => $unless,
-      before  => Exec["cabal install ${title}"],
+      before  => Exec["cabal install ${package}"],
       returns => [0, 1],
     }
   }
