@@ -7,7 +7,7 @@ define cabalinstall (
   $build_doc = true,
   $maxruns = $::haskell::maxruns,
   $extra_lib_dirs = undef,
-  $creates = '') {
+  $creates = undef) {
   ### If $unless is undefined, assume that the package is installed in the following way:
     ## Extract the Version number of the installed package found in ghc-pkg
     ## Compare it to the number in the .cabal file
@@ -51,6 +51,7 @@ define cabalinstall (
     command => "ghc-pkg unregister --force ${name}-\$(${version})",
     onlyif  => $onlyif,
     unless  => ["test \$(${basicfilter} | wc -l) -lt 2", $unl],
-    require => Exec["cabal install ${title} (${name})"],
+    before  => Exec["cabal install ${title} (${name})"],
+    returns => [0, 1],
   }
 }

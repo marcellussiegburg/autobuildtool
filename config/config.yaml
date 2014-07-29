@@ -38,6 +38,7 @@ haskell::ghc::version: '7.8.2'
 haskell::cabal::version: '1.20.0.1'
 haskell::cabal_install::version: '1.20.0.2'
 haskell::maxruns: 10
+haskell::haddock_version: '2.14.2'
 haskell::packages:
  - haskell-src-exts-1.15.0.1
  - text-0.11.3.1
