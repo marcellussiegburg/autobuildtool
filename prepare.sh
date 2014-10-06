@@ -28,7 +28,8 @@ case $(facter osfamily) in
 	apt-get update -qq --fix-missing
 	apt-get install -qq -y puppet ;;
     RedHat)
-	yum update -y puppet ca-certificates ;;
+	yum install -y puppet-3.6.2
+	yum update -y ca-certificates ;;
     *)
 	echo "Operating System Family not supported" >&2
 	exit 1 ;;
