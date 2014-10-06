@@ -6,7 +6,8 @@ $minister_name, $minister_password) {
   $password = 'passwort'
   $school_id = 1
   $minister_id = 1
-  $minister_password_enc = "ghc -i/home/vagrant/tool/db/src Operate.Crypt -e 'encrypt \"${minister_password}\"'"
+  $tool_path = $::autotool::autotool_path
+  $minister_password_enc = "ghc -i${tool_path}/db/src Operate.Crypt -e 'encrypt \"${minister_password}\"'"
 
   exec { 'Create Database':
     command => "echo 'GRANT ALL ON autoan.* TO \"${user}\"@\"localhost\" IDENTIFIED BY \"${password}\"; CREATE DATABASE autoan;' | mysql -u root",
@@ -15,7 +16,7 @@ $minister_name, $minister_password) {
   }
 
   exec { 'Create Tables':
-    command => "mysql -u ${user} -p${password} autoan < /home/vagrant/tool/db/tables.sql",
+    command => "mysql -u ${user} -p${password} autoan < ${tool_path}/db/tables.sql",
     user    => 'root',
     require => Exec['Create Database'],
     unless  => 'echo "use autoan; show tables;" | mysql -u root | grep ^aufgabe$',
