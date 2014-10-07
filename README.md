@@ -22,8 +22,9 @@ Contents
 3. [A break](#a-break)
     1. [Suspend](#suspend)
     2. [Halt](#halt)
-4. [Clean up](#clean-up)
-5. [Additional Information](#additional-information)
+4. [Making Changes](#making-changes)
+5. [Clean up](#clean-up)
+6. [Additional Information](#additional-information)
 
 
 <a name=installation></a>
@@ -191,6 +192,24 @@ Will attempt to shut down the VM. If this fails, it will force the shutdown. Eit
 ```bash
 vagrant halt
 ```
+
+<a name=making-changes></a>
+Making changes
+--------------
+
+You can modify any puppet manifest in the ```manifest``` folder. In order to apply the changes you either need to run
+
+```bash
+vagrant up
+```
+
+if you have not created your virtual machine yet. Or you apply it using:
+
+```bash
+vagrant provision
+```
+
+Not the whole catalogue will be applied, but it might be required to trigger the application of some parts, e.g. by deleting the user repository of ```ghc-pkg```. You may also use ```vagrant provision``` after changing your configuration.
 
 <a name=clean-up></a>
 Clean up
