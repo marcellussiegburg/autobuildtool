@@ -41,5 +41,7 @@ node default {
       ensure => latest;
     'w3m':
       ensure => latest;
+    'graphviz':
+      ensure => latest;
   }
 }
