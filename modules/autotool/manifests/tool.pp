@@ -3,14 +3,6 @@ class autotool::tool ($build_doc = $::autotool::build_doc) {
   $path = $::autotool::autotool_path
   $cgi_bin = $::autotool::cgi_bin
   $html_dir = $::autotool::html_dir
-  case $::architecture {
-    x86_64: {
-      $lib_dirs = '/usr/lib64/mysql'
-    }
-    default: {
-      $lib_dirs = '/usr/lib/mysql'
-    }
-  }
 
   cabalinstall { 'interface':
     name      => 'autotool-interface',
@@ -43,7 +35,6 @@ class autotool::tool ($build_doc = $::autotool::build_doc) {
     name           => 'autotool-db',
     cwd            => "${path}/db",
     build_doc      => $build_doc,
-    extra_lib_dirs => $lib_dirs,
     require        =>
       [ Cabalinstall['interface'],
         Cabalinstall['collection'],
