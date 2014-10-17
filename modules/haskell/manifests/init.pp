@@ -1,7 +1,8 @@
 ###  (c) Marcellus Siegburg, 2013-2014, License: GPL
-class haskell ($alex_version = undef, $packages = undef, $git_packages = undef,
-$happy_version = undef, $hscolour_version = undef, $haddock_version = undef,
-$maxruns = 1) {
+class haskell ($alex_version = undef, $git_packages = undef,
+$git_path = '/home/vagrant/cabal-git', $happy_version = undef,
+$hscolour_version = undef, $haddock_version = undef, $maxruns = 1,
+$packages = []) {
   include haskell::ghc
   include haskell::cabal
   include haskell::cabal_install
@@ -49,19 +50,8 @@ $maxruns = 1) {
     require     => Cabalinstall::Hackage['haddock'],
   }
 
-  if ($packages != undef) {
-    $extra_packages = join($packages, ' ')
-
-    cabalinstall::hackage { $extra_packages:
-      require => Exec['ghc-pkg remove user packages'],
-    }
-
-    if ($git_packages != undef) {
-      map($git_packages) |$git| {
-        Cabalinstall::Hackage[$extra_packages] -> Cabalinstall::Git[$git[0]]
-      }
-    }
-  }
+  $packages_versioned = $packages.filter |$p| { $p =~ /-[\.\d]+$/ }
+  $packages_no_version = $packages.filter |$p| { $p !~ /-[\.\d]+$/ }
 
   if ($git_packages != undef) {
     create_resources(cabalinstall::git, $git_packages)

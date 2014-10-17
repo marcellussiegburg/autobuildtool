@@ -13,6 +13,19 @@ class autotool::dependencies ($build_doc = true) {
       $lib_dirs = '/usr/lib/mysql'
     }
   }
+  $name_version = '([[:alnum:]-]+)-([\.\d]+)$'
+  $const = '--constraint=\1==\2'
+  $constraints = regsubst($::haskell::packages_versioned, $name_version, $const)
+  $constraint = join($constraints, ' ')
+  $extra = join($::haskell::packages_no_version, ' ')
+  $extras_git = map($::haskell::git_packages) |$git| {
+    if has_key($git[1], 'version') {
+      "${git[0]}-${git[1]['version']}"
+    } else {
+      $git[0]
+    }
+  }
+  $extra_git = join(prefix($extras_git, "${::haskell::git_path}/"), ' ')
   $libs = "--extra-lib-dirs=${lib_dirs}"
   $autolib = ['lib', 'algorithm', 'cgi', 'data', 'derive', 'dot', 'exp', 'fa',
               'foa', 'fta', 'genetic', 'graph', 'logic', 'output', 'reader',
@@ -24,9 +37,27 @@ class autotool::dependencies ($build_doc = true) {
   $autotool_paths = prefix($autotool, "${::autotool::autotool_path}/")
   $autolib_packages = join($autolib_paths, ' ')
   $autotool_packages = join($autotool_paths, ' ')
-  $get_deps = 'cabal install --only-dependencies --dry-run'
+  $get_deps = "cabal install --only-dependencies --dry-run ${constraint} ${extra} ${extra_git}"
   $tmp = '/home/vagrant/tmp_packages'
   $packages = '/home/vagrant/packages'
+  $command = "cabal install ${doc} ${libs} ${extra_git}"
+  # Filter: Filter Packages and Flags in output of $get_deps
+  # Begin Filter
+  $filters = map($::haskell::git_packages) |$git| {
+    "| sed '/^${git[0]}[0-9\\.]\\+/d'"
+  }
+  $filter = join($filters, ' ')
+  $latest = '-e "s/ (latest: .\+)//g"'
+  $new_package = '-e "s/ (new package)//g"'
+  $changes_1 = '-e "s/[a-zA-Z0-9\.\-]* -> [a-zA-Z0-9\.\-]\+//g"'
+  $changes_2 = '-e "s/changes://g"'
+  $changes_3 = '-e "s/,//g"'
+  $changes = "sed ${changes_1} ${changes_2} ${changes_3}"
+  $reinstall = '-e "s/ (reinstall)//g"'
+  $flags = '-e "s/ \(-[a-zA-Z0-9\-]\+\)/ --flags=\"\1\"/g"'
+  $prepare = "sed ${latest} ${new_package} ${reinstall} ${flags} ${packages}"
+  $filter_command = "${command} \$(echo \$(${prepare} ${filter}) | ${changes})"
+  # End Filter
 
   exec { 'get dependencies':
     command => "${get_deps} ${autolib_packages} ${autotool_packages} > ${tmp}",
@@ -35,7 +66,7 @@ class autotool::dependencies ($build_doc = true) {
 
   exec { 'extract packages':
     command => "grep -v 'Resolving dependencies...' ${tmp} | grep -v 'In order' > ${packages}",
-    cwd     => "/home/vagrant",
+    cwd     => '/home/vagrant',
     require => Exec['get dependencies'],
   }
 
@@ -45,8 +76,44 @@ class autotool::dependencies ($build_doc = true) {
   }
 
   exec { 'install dependencies':
-    command => "cabal install ${doc} ${libs} \$(sed 's/(latest: .\\+)//g' ${packages})",
-    cwd     => "/home/vagrant",
+    command => $filter_command,
+    cwd     => '/home/vagrant',
     require => Exec['extract packages'],
+    unless  => 'grep "requested packages are already installed" ${packages}',
+  }
+  
+  if ($::haskell::packages_versioned != []) {
+    map($::haskell::packages_versioned) |$package| {
+      cabalinstall::hackage { $package:
+        build_doc      => $build_doc,
+        extra_lib_dirs => $lib_dirs,
+        require        => Exec['install dependencies'],
+      }
+    }
+  }
+
+  if ($::haskell::packages_no_version != []) {
+    cabalinstall::hackage { join($::haskell::packages_no_version, ' '):
+      build_doc      => $build_doc,
+      extra_lib_dirs => $lib_dirs,
+      require        => Exec['install dependencies'],
+    }
+  }
+
+  if ($::haskell::git_packages != undef) {
+    map($extras_git) |$git| {
+      cabalinstall { $git:
+        cwd            => "${::haskell::git_path}/${git}",
+        build_doc      => $build_doc,
+        extra_lib_dirs => $lib_dirs,
+        require        => Exec['install dependencies'],
+      }
+      Cabalinstall[$git] -> Exec['install remaining dependencies']
+    }
+    exec { 'install remaining dependencies':
+      command => "${command} --dependencies-only ${autolib_packages} ${autotool_packages}",
+      cwd     => '/home/vagrant',
+      unless  => 'grep "requested packages are already installed" ${packages}',
+    }
   }
 }
