@@ -47,21 +47,13 @@ class autotool::dependencies ($build_doc = true) {
     "| sed '/^${git[0]}[0-9\\.]\\+/d'"
   }
   $filter = join($filters, ' ')
-  $latest = '-e "s/ (latest: .\+)//g"'
-  $new_package = '-e "s/ (new package)//g"'
-  $changes_1 = '-e "s/[a-zA-Z0-9\.\-]* -> [a-zA-Z0-9\.\-]\+//g"'
-  $changes_2 = '-e "s/changes://g"'
-  $changes_3 = '-e "s/,//g"'
-  $changes = "sed ${changes_1} ${changes_2} ${changes_3}"
-  $reinstall = '-e "s/ (reinstall)//g"'
-  $flags = '-e "s/ \(-[a-zA-Z0-9\-]\+\)/ --flags=\"\1\"/g"'
-  $prepare = "sed ${latest} ${new_package} ${reinstall} ${flags} ${packages}"
-  $filter_command = "${command} \$(echo \$(${prepare} ${filter}) | ${changes})"
+  $filter_cmd = $::haskell::filter_packages
+  $install_command = "${command} \$(echo \$(${filter_cmd} ${packages} ${filter}))"
   # End Filter
 
   exec { 'get dependencies':
     command => "${get_deps} ${autolib_packages} ${autotool_packages} > ${tmp}",
-    cwd     => "/home/vagrant",
+    cwd     => '/home/vagrant',
   }
 
   exec { 'extract packages':
@@ -76,7 +68,7 @@ class autotool::dependencies ($build_doc = true) {
   }
 
   exec { 'install dependencies':
-    command => $filter_command,
+    command => $install_command,
     cwd     => '/home/vagrant',
     require => Exec['extract packages'],
     unless  => 'grep "requested packages are already installed" ${packages}',
