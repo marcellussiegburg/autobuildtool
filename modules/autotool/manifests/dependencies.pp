@@ -50,6 +50,8 @@ class autotool::dependencies ($build_doc = true) {
   $filter_cmd = $::haskell::filter_packages
   $install_command = "${command} \$(echo \$(${filter_cmd} ${packages} ${filter}))"
   # End Filter
+  $to_constraint = $::haskell::packages_to_constraints
+  $dependency_constraints = "\$(echo \$(${filter_cmd} ${packages} | ${to_constraint}))"
 
   exec { 'get dependencies':
     command => "${get_deps} ${autolib_packages} ${autotool_packages} > ${tmp}",

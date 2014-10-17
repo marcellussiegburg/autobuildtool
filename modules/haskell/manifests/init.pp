@@ -9,6 +9,7 @@ $packages = []) {
 
   $ghc_unregister_user = '/vagrant/modules/haskell/files/ghc-unregister-user.sh'
   $filter_packages = '/vagrant/modules/haskell/files/filter_packages.sh'
+  $packages_to_constraints = '/vagrant/modules/haskell/files/packages_to_constraints.sh'
   $unless_hscolour = 'ghc-pkg list hscolour | grep hscolour'
 
   Class['haskell::ghc'] -> Class['haskell::cabal']

@@ -1,23 +1,26 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
 class autotool::autolib ($build_doc = $::autotool::build_doc) {
   $path = $::autotool::autolib_path
+
+  Cabalinstall {
+    constraints => $::autotool::dependencies::dependency_constraints,
+    build_doc => $build_doc,
+  }
+
   cabalinstall { 'autolib-cgi':
     cwd       => "${path}/cgi",
-    build_doc => $build_doc,
     onlyif    => "test -d ${path}/cgi",
     unless    => 'cabal list --installed --simple-output | grep autolib-cgi',
   }
 
   cabalinstall { 'autolib-derive':
     cwd       => "${path}/derive",
-    build_doc => $build_doc,
     onlyif    => "test -d ${path}/derive",
     unless    => 'cabal list --installed --simple-output | grep autolib-derive',
   }
 
   cabalinstall { 'autolib-todoc':
     cwd       => "${path}/todoc",
-    build_doc => $build_doc,
     require   => Cabalinstall['autolib-derive'],
     onlyif    => "test -d ${path}/todoc",
     unless    => 'cabal list --installed --simple-output | grep autolib-todoc',
@@ -25,7 +28,6 @@ class autotool::autolib ($build_doc = $::autotool::build_doc) {
 
   cabalinstall { 'autolib-reader':
     cwd       => "${path}/reader",
-    build_doc => $build_doc,
     require   =>
       [ Cabalinstall['autolib-derive'],
         Cabalinstall['autolib-todoc'] ],
@@ -35,7 +37,6 @@ class autotool::autolib ($build_doc = $::autotool::build_doc) {
 
   cabalinstall { 'autolib-data':
     cwd       => "${path}/data",
-    build_doc => $build_doc,
     require   =>
       [ Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'] ],
@@ -45,7 +46,6 @@ class autotool::autolib ($build_doc = $::autotool::build_doc) {
 
   cabalinstall { 'autolib-util':
     cwd       => "${path}/util",
-    build_doc => $build_doc,
     require   =>
       [ Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
@@ -56,7 +56,6 @@ class autotool::autolib ($build_doc = $::autotool::build_doc) {
 
   cabalinstall { 'autolib-output':
     cwd       => "${path}/output",
-    build_doc => $build_doc,
     require   => Cabalinstall['autolib-todoc'],
     onlyif    => "test -d ${path}/output",
     unless    => 'cabal list --installed --simple-output | grep autolib-output',
@@ -64,7 +63,6 @@ class autotool::autolib ($build_doc = $::autotool::build_doc) {
 
   cabalinstall { 'autolib-reporter':
     cwd       => "${path}/reporter",
-    build_doc => $build_doc,
     require   =>
       [ Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
@@ -76,7 +74,6 @@ class autotool::autolib ($build_doc = $::autotool::build_doc) {
 
   cabalinstall { 'autolib-dot':
     cwd       => "${path}/dot",
-    build_doc => $build_doc,
     require   =>
       [ Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
@@ -90,7 +87,6 @@ class autotool::autolib ($build_doc = $::autotool::build_doc) {
 
   cabalinstall { 'autolib-algorithm':
     cwd       => "${path}/algorithm",
-    build_doc => $build_doc,
     require   => Cabalinstall['autolib-data'],
     onlyif    => "test -d ${path}/algorithm",
     unless    => 'cabal list --installed --simple-output | grep autolib-algorithm',
@@ -98,7 +94,6 @@ class autotool::autolib ($build_doc = $::autotool::build_doc) {
 
   cabalinstall { 'autolib-relation':
     cwd       => "${path}/relation",
-    build_doc => $build_doc,
     require   =>
       [ Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
@@ -111,7 +106,6 @@ class autotool::autolib ($build_doc = $::autotool::build_doc) {
 
   cabalinstall { 'autolib-fa':
     cwd       => "${path}/fa",
-    build_doc => $build_doc,
     require   =>
       [ Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
@@ -126,7 +120,6 @@ class autotool::autolib ($build_doc = $::autotool::build_doc) {
 
   cabalinstall { 'autolib-genetic':
     cwd       => "${path}/genetic",
-    build_doc => $build_doc,
     require   =>
       [ Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-data'],
@@ -137,7 +130,6 @@ class autotool::autolib ($build_doc = $::autotool::build_doc) {
 
   cabalinstall { 'autolib-tex':
     cwd       => "${path}/tex",
-    build_doc => $build_doc,
     require   => Cabalinstall['autolib-todoc'],
     onlyif    => "test -d ${path}/tex",
     unless    => 'cabal list --installed --simple-output | grep autolib-tex',
@@ -145,7 +137,6 @@ class autotool::autolib ($build_doc = $::autotool::build_doc) {
 
   cabalinstall { 'autolib-rewriting':
     cwd       => "${path}/rewriting",
-    build_doc => $build_doc,
     require   =>
       [ Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
@@ -161,7 +152,6 @@ class autotool::autolib ($build_doc = $::autotool::build_doc) {
 
   cabalinstall { 'autolib-transport':
     cwd       => "${path}/transport",
-    build_doc => $build_doc,
     require   => Cabalinstall['autolib-derive'],
     onlyif    => "test -d ${path}/transport",
     unless    => 'cabal list --installed --simple-output | grep autolib-transport',
@@ -169,7 +159,6 @@ class autotool::autolib ($build_doc = $::autotool::build_doc) {
 
   cabalinstall { 'autolib-graph':
     cwd       => "${path}/graph",
-    build_doc => $build_doc,
     require   =>
       [ Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
@@ -183,7 +172,6 @@ class autotool::autolib ($build_doc = $::autotool::build_doc) {
 
   cabalinstall { 'autolib-exp':
     cwd       => "${path}/exp",
-    build_doc => $build_doc,
     require   =>
       [ Cabalinstall['autolib-reader'],
         Cabalinstall['autolib-data'],
@@ -196,7 +184,6 @@ class autotool::autolib ($build_doc = $::autotool::build_doc) {
 
   cabalinstall { 'autolib-fta':
     cwd       => "${path}/fta",
-    build_doc => $build_doc,
     require   =>
       [ Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
@@ -213,7 +200,6 @@ class autotool::autolib ($build_doc = $::autotool::build_doc) {
 
   cabalinstall { 'autolib-foa':
     cwd       => "${path}/foa",
-    build_doc => $build_doc,
     require   =>
       [ Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
@@ -231,7 +217,6 @@ class autotool::autolib ($build_doc = $::autotool::build_doc) {
 
   cabalinstall { 'autolib-logic':
     cwd       => "${path}/logic",
-    build_doc => $build_doc,
     require   =>
       [ Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-reader'],
@@ -243,7 +228,6 @@ class autotool::autolib ($build_doc = $::autotool::build_doc) {
 
   cabalinstall { 'autolib-lib':
     cwd       => "${path}/lib",
-    build_doc => $build_doc,
     require   =>
       [ Cabalinstall['autolib-todoc'],
         Cabalinstall['autolib-tex'],

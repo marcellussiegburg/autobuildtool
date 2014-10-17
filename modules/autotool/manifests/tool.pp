@@ -4,17 +4,20 @@ class autotool::tool ($build_doc = $::autotool::build_doc) {
   $cgi_bin = $::autotool::cgi_bin
   $html_dir = $::autotool::html_dir
 
+  Cabalinstall {
+    constraints => $::autotool::dependencies::dependency_constraints,
+    build_doc => $build_doc,
+  }
+
   cabalinstall { 'interface':
     name      => 'autotool-interface',
     cwd       => "${path}/interface",
-    build_doc => $build_doc,
     onlyif    => "test -d ${path}/interface",
   }
 
   cabalinstall { 'collection':
     name      => 'autotool-collection',
     cwd       => "${path}/collection",
-    build_doc => $build_doc,
     require   => Cabalinstall['interface'],
     onlyif    => "test -d ${path}/collection",
   }
@@ -34,7 +37,6 @@ class autotool::tool ($build_doc = $::autotool::build_doc) {
   cabalinstall { 'db':
     name           => 'autotool-db',
     cwd            => "${path}/db",
-    build_doc      => $build_doc,
     require        =>
       [ Cabalinstall['interface'],
         Cabalinstall['collection'],
@@ -58,7 +60,6 @@ class autotool::tool ($build_doc = $::autotool::build_doc) {
   cabalinstall { 'server-interface':
     name      => 'autotool-server-interface',
     cwd       => "${path}/server-interface",
-    build_doc => $build_doc,
     require   => Cabalinstall['interface'],
     onlyif    => "test -d ${path}/server-interface",
   }
@@ -72,7 +73,6 @@ class autotool::tool ($build_doc = $::autotool::build_doc) {
   cabalinstall { 'server-implementation':
     name      => 'autotool-server-implementation',
     cwd       => "${path}/server-implementation",
-    build_doc => $build_doc,
     require   =>
       [ Cabalinstall['collection'],
         Cabalinstall['server-interface'],
@@ -118,7 +118,6 @@ class autotool::tool ($build_doc = $::autotool::build_doc) {
   #   name      => 'autolat-client',
   #   cwd       => "${path}/client",
   #   creates   => '/home/vagrant/.cabal/bin/autotool-happs',
-  #   build_doc => $build_doc,
   #   file      => "$cwd/autotool-client.cabal",
   #   require   =>
   #     [ Cabalinstall['server-interface'],
