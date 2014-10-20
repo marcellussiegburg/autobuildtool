@@ -24,7 +24,7 @@ autotool::build_doc: true
 autotool::enable_highscore: true
 autotool::sources::autolib_url: 'git://autolat.imn.htwk-leipzig.de/git/autolib'
 autotool::sources::autolib_branch: 'for-ghc-7.8'
-autotool::sources::tool_url: 'https://github.com/marcellussiegburg/autotool.git'
+autotool::sources::tool_url: 'git://autolat.imn.htwk-leipzig.de/git/tool'
 autotool::sources::tool_branch: 'for-ghc-7.8'
 autotool::database::school_name: 'school'
 autotool::database::school_mail_suffix: 'localhost'
