@@ -38,10 +38,7 @@ haskell::ghc::version: '7.8.3'
 haskell::cabal::version: '1.20.0.2'
 haskell::cabal_install::version: '1.20.0.3'
 haskell::maxruns: 10
-haskell::haddock_version: '2.15.0'
+haskell::haddock_version: '2.15.0.2'
 haskell::packages:
- - haskell-src-exts-1.15.0.1
- - network-2.5.0.0
+ - http-streams-0.8.3.3
 haskell::git_packages:
- 'cgi':
-   url: 'https://github.com/jhenahan/haskell-cgi'
