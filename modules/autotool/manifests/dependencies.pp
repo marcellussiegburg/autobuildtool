@@ -18,14 +18,6 @@ class autotool::dependencies ($build_doc = true) {
   $constraints = regsubst($::haskell::packages_versioned, $name_version, $const)
   $constraint = join($constraints, ' ')
   $extra = join($::haskell::packages_no_version, ' ')
-  $extras_git = map($::haskell::git_packages) |$git| {
-    if has_key($git[1], 'version') {
-      "${git[0]}-${git[1]['version']}"
-    } else {
-      $git[0]
-    }
-  }
-  $extra_git = join(prefix($extras_git, "${::haskell::git_path}/"), ' ')
   $libs = "--extra-lib-dirs=${lib_dirs}"
   $autolib = ['lib', 'algorithm', 'cgi', 'data', 'derive', 'dot', 'exp', 'fa',
               'foa', 'fta', 'genetic', 'graph', 'logic', 'output', 'reader',
@@ -43,10 +35,6 @@ class autotool::dependencies ($build_doc = true) {
   $command = "cabal install ${doc} ${libs} ${extra_git}"
   # Filter: Filter Packages and Flags in output of $get_deps
   # Begin Filter
-  $filters = map($::haskell::git_packages) |$git| {
-    "| sed '/^${git[0]}[0-9\\.]\\+/d'"
-  }
-  $filter = join($filters, ' ')
   $filter_cmd = $::haskell::filter_packages
   $install_command = "${command} \$(echo \$(${filter_cmd} ${packages} ${filter}))"
   # End Filter
@@ -95,6 +83,14 @@ class autotool::dependencies ($build_doc = true) {
   }
 
   if ($::haskell::git_packages != undef) {
+    $extras_git = map($::haskell::git_packages) |$git| {
+      if has_key($git[1], 'version') {
+        "${git[0]}-${git[1]['version']}"
+      } else {
+        $git[0]
+      }
+    }
+    $extra_git = join(prefix($extras_git, "${::haskell::git_path}/"), ' ')
     map($extras_git) |$git| {
       cabalinstall { $git:
         cwd            => "${::haskell::git_path}/${git}",
@@ -104,10 +100,17 @@ class autotool::dependencies ($build_doc = true) {
       }
       Cabalinstall[$git] -> Exec['install remaining dependencies']
     }
+    $filters = map($::haskell::git_packages) |$git| {
+      "| sed '/^${git[0]}[0-9\\.]\\+/d'"
+    }
+    $filter = join($filters, ' ')
     exec { 'install remaining dependencies':
       command => "${command} --dependencies-only ${autolib_packages} ${autotool_packages}",
       cwd     => '/home/vagrant',
       unless  => 'grep "requested packages are already installed" ${packages}',
     }
+  } else {
+    $extra_git = ''
+    $filter = ''
   }
 }
