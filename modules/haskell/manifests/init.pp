@@ -2,7 +2,7 @@
 class haskell ($alex_version = undef, $git_packages = undef,
 $git_path = '/home/vagrant/cabal-git', $happy_version = undef,
 $hscolour_version = undef, $haddock_version = undef, $maxruns = 1,
-$packages = []) {
+$wget_param = '', $packages = []) {
   include haskell::ghc
   include haskell::cabal
   include haskell::cabal_install

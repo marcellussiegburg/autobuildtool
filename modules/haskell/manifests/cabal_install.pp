@@ -6,7 +6,7 @@ class haskell::cabal_install ($zlib_dev, $version) {
   $archive = "${path}.tar.gz"
 
   exec { 'cabal-install download':
-    command => "wget ${url}/${install_name}/${install_name}.tar.gz",
+    command => "wget ${::haskell::wget_param} ${url}/${install_name}/${install_name}.tar.gz",
     creates => $archive,
     unless  => "test \"`cabal --version | head -1 | awk '{print \$NF}'`\" = ${version}",
   }

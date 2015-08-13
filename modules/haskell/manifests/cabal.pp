@@ -7,7 +7,7 @@ class haskell::cabal ($version) {
   $filter = 'awk -F\'.\' \'{print $1"."$2"."$3}\''
 
   exec { 'cabal download':
-    command => "wget ${url}/cabal-${version}/${cabal_name}.tar.gz",
+    command => "wget ${::haskell::wget_param} ${url}/cabal-${version}/${cabal_name}.tar.gz",
     creates => $archive,
     unless  => "test \"`cabal --version | tail -1 | awk '{print \$3}' | ${filter}`\" = \"`echo ${version} | ${filter}`\"",
   }

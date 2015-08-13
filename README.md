@@ -62,6 +62,8 @@ This may take a while, depending on your computer it might take longer than an h
 
 When it is completed a new virtual machine is created and running. You can interact with the machine using.
 
+Note: If you had problems on getting started you may set the parameter `haskell::wget_param` according to [Haskell Configuration](#haskell-config).
+
 ```bash
 vagrant ssh
 ```
@@ -133,6 +135,7 @@ The VM Configuration section starts with `vm` the following indented lines belon
 | `haskell::hscolour_version`       | The hscolour version to be installed. Might be any version listed at <http://hackage.haskell.org/package/hscolour>. |
 | `haskell::maxruns`                | The maximum number of cabal-install runs that shall be executed, if error messages occur that indicate low memory (useful if `memory` and `swap` ([see VM Configuration)](#vm-config)) have got low values).
 | `haskell::packages`               | Additional hackage cabal packages or specific hackage cabal packages to be installed *before* every other package. Might be useful if older versions of autotool shall be installed. |
+| `haskell::wget_param`             | Additional parameters to send to wget for download the required files from <http://www.haskell.org/>. Because of certificate issues it seems to be required to add the parameter '--no-check-certificate'. Try it, if you have problems while downloading the files. |
 | `haskell::git_packages`           | Additional cabal packages from certain git-repository to be installed *before* every other package. Might be useful if cabal version is too old or broken. |
 
 Example of specifying additional hackage cabal packages:

@@ -8,6 +8,10 @@ class haskell::ghc ($libgmp, $libgmp_dev, $version) {
       'redhat' => '-centos65',
       'debian' => '-deb7',
     },
+    /^7.10.\d$/ => $osfamily ? {
+      'redhat' => '-centos66',
+      'debian' => '-deb7',
+    },
     default    => '',
   }
   $path = "/home/vagrant/${versionname}"
@@ -15,7 +19,7 @@ class haskell::ghc ($libgmp, $libgmp_dev, $version) {
   $archive = "/home/vagrant/${archive_name}"
 
   exec { 'ghc download':
-    command => "wget http://www.haskell.org/ghc/dist/${version}/${archive_name}",
+    command => "wget ${::haskell::wget_param} http://www.haskell.org/ghc/dist/${version}/${archive_name}",
     unless  => "test `ghc --version | awk '{print \$NF}'` = ${version}",
   }
 
