@@ -39,6 +39,11 @@ class haskell::ghc ($libgmp, $libgmp_dev, $version) {
     require => Package[$libgmp],
   }
 
+  package { $::haskell::other_libs:
+    ensure => latest,
+    require => Package[$libgmp_dev],
+  }
+
   exec { 'ghc configure':
     command => "${path}/configure --prefix=/usr/local",
     cwd     => $path,

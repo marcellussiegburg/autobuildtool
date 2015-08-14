@@ -32,8 +32,8 @@ class autotool::doc ($relative_links = true, $domain = 'http://localhost', $port
   file {
     [$target_user, $target_system]:
       ensure => directory,
-      owner  => 'apache',
-      group  => 'apache',
+      owner  => $::apache::apache_user,
+      group  => $::apache::apache_user,
   }
 
   exec {

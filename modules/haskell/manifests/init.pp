@@ -2,7 +2,7 @@
 class haskell ($alex_version = undef, $git_packages = undef,
 $git_path = '/home/vagrant/cabal-git', $happy_version = undef,
 $hscolour_version = undef, $haddock_version = undef, $maxruns = 1,
-$wget_param = '', $packages = []) {
+$other_libs = [], $wget_param = '', $packages = []) {
   include haskell::ghc
   include haskell::cabal
   include haskell::cabal_install
@@ -10,7 +10,7 @@ $wget_param = '', $packages = []) {
   $ghc_unregister_user = '/vagrant/modules/haskell/files/ghc-unregister-user.sh'
   $filter_packages = '/vagrant/modules/haskell/files/filter_packages.sh'
   $packages_to_constraints = '/vagrant/modules/haskell/files/packages_to_constraints.sh'
-  $unless_hscolour = 'ghc-pkg list hscolour | grep hscolour'
+  $bin_path = '/usr/local/sbin'
 
   Class['haskell::ghc'] -> Class['haskell::cabal']
   Class['haskell::ghc'] -> Class['haskell::cabal_install']
@@ -32,16 +32,24 @@ $wget_param = '', $packages = []) {
   cabalinstall::hackage {
     'alex':
       version => $alex_version,
-      unless  => $unless_hscolour;
+      bindir  => $bin_path,
+      sandbox => true,
+      unless  => "test -f ${bin_path}/alex";
     'happy':
       version => $happy_version,
-      unless  => $unless_hscolour;
+      bindir  => $bin_path,
+      sandbox => true,
+      unless  => "test -f ${bin_path}/happy";
     'hscolour':
       version => $hscolour_version,
-      unless  => $unless_hscolour;
+      bindir  => $bin_path,
+      sandbox => true,
+      unless  => "test -f ${bin_path}/HsColour";
     'haddock':
       version => $haddock_version,
-      unless  => 'ghc-pkg list haddock | grep haddock';
+      bindir  => $bin_path,
+      sandbox => true,
+      unless  => "test -f ${bin_path}/haddock";
   }
 
   Class['haskell::cabal_install'] ~> Exec['ghc-pkg remove user packages']

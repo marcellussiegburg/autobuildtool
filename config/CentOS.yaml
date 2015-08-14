@@ -2,6 +2,7 @@
 autotool::html_dir: '/var/www/html'
 autotool::cgi_bin: '/var/www/cgi-bin'
 apache::apache: 'httpd'
+apache::apache_user: 'apache'
 haskell::cabal_install::zlib_dev: 'zlib-devel'
 haskell::ghc::libgmp: 'gmp'
 haskell::ghc::libgmp_dev: 'gmp-devel'

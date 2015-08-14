@@ -78,12 +78,13 @@ class autotool::tool ($build_doc = $::autotool::build_doc) {
         Cabalinstall['server-interface'],
         File['Config.hs link'] ],
     onlyif    => "test -d ${path}/server-implementation",
+    unless    => 'test -f /home/vagrant/.cabal/bin/autotool.cgi',
   }
 
   file { "${cgi_bin}/autotool.cgi":
     ensure  => file,
-    owner   => 'apache',
-    group   => 'apache',
+    owner   => $::apache::apache_user,
+    group   => $::apache::apache_user,
     require => Cabalinstall['server-implementation'],
     source  => '/home/vagrant/.cabal/bin/autotool.cgi',
   }
@@ -92,20 +93,20 @@ class autotool::tool ($build_doc = $::autotool::build_doc) {
     "${cgi_bin}/Super.cgi":
       ensure  => file,
       require => Cabalinstall['db'],
-      owner   => 'apache',
-      group   => 'apache',
+      owner   => $::apache::apache_user,
+      group   => $::apache::apache_user,
       source  => '/home/vagrant/.cabal/bin/autotool-Super';
     "${cgi_bin}/Trial.cgi":
       ensure  => file,
       require => Cabalinstall['db'],
-      owner   => 'apache',
-      group   => 'apache',
+      owner   => $::apache::apache_user,
+      group   => $::apache::apache_user,
       source  => '/home/vagrant/.cabal/bin/autotool-Trial';
     [$html_dir, $cgi_bin]:
       ensure  => directory,
       require => Cabalinstall['db'],
-      owner   => 'apache',
-      group   => 'apache';
+      owner   => $::apache::apache_user,
+      group   => $::apache::apache_user;
   }
 
   # exec { 'Prepare client':

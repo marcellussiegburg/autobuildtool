@@ -8,17 +8,17 @@ class autotool::highscore {
   file {
     "${html_dir}/high":
       ensure => directory,
-      owner  => 'apache',
-      group  => 'apache';
+      owner  => $::apache::apache_user,
+      group  => $::apache::apache_user;
     ['/space', '/space/autotool']:
       ensure => directory,
-      owner  => 'apache',
-      group  => 'apache';
+      owner  => $::apache::apache_user,
+      group  => $::apache::apache_user;
   }
 
   cron { 'autotool_highscore':
     command => "${scorer} ${logs} 2> /dev/null 1> /tmp/score.html && mv /tmp/score.html ${scores}",
-    user    => 'apache',
+    user    => $::apache::apache_user,
     minute  => '*/5'
   }
 }

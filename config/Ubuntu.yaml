@@ -1,9 +1,13 @@
 ---
-autotool::html_dir: '/var/www'
+autotool::html_dir: '/var/www/html'
 autotool::cgi_bin: '/usr/lib/cgi-bin'
 apache::apache: 'apache2'
+apache::apache_user: 'www-data'
 haskell::cabal_install::zlib_dev: 'zlibc'
-haskell::ghc::libgmp: 'libgmp3c2'
+haskell::ghc::libgmp: 'libgmp10'
 haskell::ghc::libgmp_dev: 'libgmp3-dev'
+haskell::other_libs:
+ - 'libssl-dev'
+ - 'libcrypto++-dev'
 mysql::mysqlclient: 'libmysqlclient-dev'
 mysql::mysqlservice: 'mysql'

@@ -61,7 +61,7 @@ class autotool::dependencies ($build_doc = true) {
     command => $install_command,
     cwd     => '/home/vagrant',
     require => Exec['extract packages'],
-    unless  => 'grep "requested packages are already installed" ${packages}',
+    unless  => "grep 'requested packages are already installed' ${packages}",
   }
   
   if ($::haskell::packages_versioned != []) {
