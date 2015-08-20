@@ -1,7 +1,7 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
 Exec {
   path        =>
-    [ '/home/vagrant/.cabal/bin', '/usr/local/sbin', '/bin/', '/sbin/',
+    [ '/usr/local/sbin', '/bin/', '/sbin/',
       '/usr/bin/', '/usr/sbin/', '/usr/local/bin/' ],
   environment => 'HOME=/home/vagrant',
   logoutput   => on_failure,

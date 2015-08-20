@@ -6,49 +6,61 @@ class autotool::tool ($build_doc = $::autotool::build_doc) {
 
   Cabalinstall {
     constraints => $::autotool::dependencies::dependency_constraints,
-    build_doc => $build_doc,
+    build_doc   => $build_doc,
+    cwd         => $::autotool::install_path,
   }
 
   cabalinstall { 'interface':
-    name      => 'autotool-interface',
-    cwd       => "${path}/interface",
-    onlyif    => "test -d ${path}/interface",
+    name   => 'autotool-interface',
+    path   => "${path}/interface",
+    onlyif => "test -d ${path}/interface",
   }
 
   cabalinstall { 'collection':
-    name      => 'autotool-collection',
-    cwd       => "${path}/collection",
-    require   => Cabalinstall['interface'],
-    onlyif    => "test -d ${path}/collection",
+    name    => 'autotool-collection',
+    path    => "${path}/collection",
+    require => Cabalinstall['interface'],
+    onlyif  => "test -d ${path}/collection",
   }
 
   file { 'Mysqlconnect.hs link':
-    ensure  => link,
-    name    => "${path}/db/src/Mysqlconnect.hs",
-    target  => "${path}/db/src/Mysqlconnect.hs.example",
+    ensure => link,
+    name   => "${path}/db/src/Mysqlconnect.hs",
+    target => "${path}/db/src/Mysqlconnect.hs.example",
   }
 
   file { 'Default.hs link':
-    ensure  => link,
-    name    => "${path}/db/src/Default.hs",
-    target  => "${path}/db/src/Default.hs.sample",
+    ensure => link,
+    name   => "${path}/db/src/Default.hs",
+    target => "${path}/db/src/Default.hs.sample",
   }
 
   cabalinstall { 'db':
-    name           => 'autotool-db',
-    cwd            => "${path}/db",
-    require        =>
+    name    => 'autotool-db',
+    path    => "${path}/db",
+    require =>
       [ Cabalinstall['interface'],
         Cabalinstall['collection'],
         Cabalinstall['server-interface'],
         File['Mysqlconnect.hs link'],
         File['Default.hs link'] ],
-    onlyif         => "test -d ${path}/db",
+    onlyif  => "test -d ${path}/db",
+  }
+
+  cabalinstall { 'yesod':
+    name    => 'autotool-yesod',
+    path    => "${path}/yesod",
+    require =>
+      [ Cabalinstall['interface'],
+        Cabalinstall['collection'],
+        Cabalinstall['server-interface'],
+        Cabalinstall['db'] ],
+    onlyif  => "test -d ${path}/yesod",
   }
 
   # cabalinstall { 'test':
   #   name      => 'autotool-test',
-  #   cwd       => "${path}/test",
+  #   path      => "${path}/test",
   #   build_doc => $build_doc,
   #   require   =>
   #     [ Cabalinstall['collection'],
@@ -58,10 +70,10 @@ class autotool::tool ($build_doc = $::autotool::build_doc) {
   # }
 
   cabalinstall { 'server-interface':
-    name      => 'autotool-server-interface',
-    cwd       => "${path}/server-interface",
-    require   => Cabalinstall['interface'],
-    onlyif    => "test -d ${path}/server-interface",
+    name    => 'autotool-server-interface',
+    path    => "${path}/server-interface",
+    require => Cabalinstall['interface'],
+    onlyif  => "test -d ${path}/server-interface",
   }
 
   file { 'Config.hs link':
@@ -71,14 +83,22 @@ class autotool::tool ($build_doc = $::autotool::build_doc) {
   }
 
   cabalinstall { 'server-implementation':
-    name      => 'autotool-server-implementation',
-    cwd       => "${path}/server-implementation",
-    require   =>
+    name    => 'autotool-server-implementation',
+    path    => "${path}/server-implementation",
+    require =>
       [ Cabalinstall['collection'],
         Cabalinstall['server-interface'],
         File['Config.hs link'] ],
-    onlyif    => "test -d ${path}/server-implementation",
-    unless    => 'test -f /home/vagrant/.cabal/bin/autotool.cgi',
+    onlyif  => "test -d ${path}/server-implementation",
+    unless  => 'test -f ${::autotool::install_path}/.cabal-sandbox/bin/autotool.cgi',
+  }
+
+  file { "${cgi_bin}/autotool-yesod.cgi":
+    ensure  => file,
+    owner   => $::apache::apache_user,
+    group   => $::apache::apache_user,
+    require => Cabalinstall['yesod'],
+    source  => "${::autotool::install_path}/.cabal-sandbox/bin/autotool-yesod.cgi",
   }
 
   file { "${cgi_bin}/autotool.cgi":
@@ -86,7 +106,7 @@ class autotool::tool ($build_doc = $::autotool::build_doc) {
     owner   => $::apache::apache_user,
     group   => $::apache::apache_user,
     require => Cabalinstall['server-implementation'],
-    source  => '/home/vagrant/.cabal/bin/autotool.cgi',
+    source  => "${::autotool::install_path}/.cabal-sandbox/bin/autotool.cgi",
   }
 
   file {
@@ -95,13 +115,13 @@ class autotool::tool ($build_doc = $::autotool::build_doc) {
       require => Cabalinstall['db'],
       owner   => $::apache::apache_user,
       group   => $::apache::apache_user,
-      source  => '/home/vagrant/.cabal/bin/autotool-Super';
+      source  => "${::autotool::install_path}/.cabal-sandbox/bin/autotool-Super";
     "${cgi_bin}/Trial.cgi":
       ensure  => file,
       require => Cabalinstall['db'],
       owner   => $::apache::apache_user,
       group   => $::apache::apache_user,
-      source  => '/home/vagrant/.cabal/bin/autotool-Trial';
+      source  => "${::autotool::install_path}/.cabal-sandbox/bin/autotool-Trial";
     [$html_dir, $cgi_bin]:
       ensure  => directory,
       require => Cabalinstall['db'],
@@ -111,14 +131,14 @@ class autotool::tool ($build_doc = $::autotool::build_doc) {
 
   # exec { 'Prepare client':
   #   command => ['sed "s/\\-\\- autotool-server/autotool-server-interface/" autotool-client.cabal > tmp.cabal; cat tmp.cabal > autotool-client.cabal; rm tmp.cabal'],
-  #   cwd     => "${path}/client",
+  #   path    => "${path}/client",
   #   onlyif  => "test -d ${path}",
   # }
 
   # cabalinstall { 'client':
   #   name      => 'autolat-client',
-  #   cwd       => "${path}/client",
-  #   creates   => '/home/vagrant/.cabal/bin/autotool-happs',
+  #   path      => "${path}/client",
+  #   creates   => "${::autotool::install_path}/.cabal-sandbox/bin/autotool-happs",
   #   file      => "$cwd/autotool-client.cabal",
   #   require   =>
   #     [ Cabalinstall['server-interface'],

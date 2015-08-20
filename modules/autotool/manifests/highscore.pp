@@ -1,6 +1,6 @@
 ###  (c) Marcellus Siegburg, 2014, License: GPL
 class autotool::highscore {
-  $scorer = '/home/vagrant/.cabal/bin/autotool-Scorer'
+  $scorer = "${::autotool::install_path}/.cabal-sandbox/bin/autotool-Scorer"
   $logs = '/space/autotool/log/*/*/*/CGI'
   $html_dir = $::autotool::html_dir
   $scores = "${html_dir}/high/score.html"

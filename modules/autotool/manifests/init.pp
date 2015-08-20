@@ -1,14 +1,23 @@
 ###  (c) Marcellus Siegburg, 2013-2014, License: GPL
-class autotool ($build_doc = true, $html_dir, $cgi_bin,
-$autolib_path = '/home/vagrant/autolib', $autotool_path = '/home/vagrant/tool'){
+class autotool ($build_doc = true, $html_dir, $cgi_bin, $sandbox = false,
+$install_path = '/home/vagrant', $autolib_path = '/home/vagrant/autolib',
+$autotool_path = '/home/vagrant/tool') {
   include autotool::sources
   include autotool::dependencies
   include autotool::autolib
   include autotool::tool
   include autotool::database
 
-  Class['autotool']
-  -> Class['autotool::sources']
+  if ($sandbox == true) {
+    exec { "initialize sandbox ${install_path}":
+      command => 'cabal sandbox init',
+      cwd     => $install_path,
+      require => Class['autotool::sources'],
+      before  => Class['autotool::dependencies'],
+    }
+  }
+
+  Class['autotool::sources']
   -> Class['autotool::dependencies']
   -> Class['autotool::autolib']
   -> Class['autotool::tool']

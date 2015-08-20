@@ -1,8 +1,9 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
 define cabalinstall (
-  $cwd,
+  $path,
+  $cwd = $path,
   $onlyif = undef,
-  $file = "${cwd}/${name}.cabal",
+  $file = "${path}/${name}.cabal",
   $unless = undef,
   $build_doc = true,
   $constraints = '',
@@ -12,11 +13,9 @@ define cabalinstall (
   ### If $unless is undefined, assume that the package is installed in the following way:
     ## Extract the Version number of the installed package found in ghc-pkg
     ## Compare it to the number in the .cabal file
-  $basicfilter = "ghc-pkg list | grep -n '^[ ]*${name}-[[:digit:]]'"
+  $basicfilter = "cabal list --installed --simple-output | grep -n '^${name} [[:digit:]]'"
   $filter = "${basicfilter} | head -1"
-  $dashes = "${filter} | grep -o '-' | wc -l"
-  $split = "\$((1 + \$(${dashes})))"
-  $version = "${filter} | cut -d'-' -f${split}"
+  $version = "${filter} | cut -d' ' -f2"
 
   if ($unless == undef) {
     $unl = "bash -Ec \"grep '^Version' ${file} | grep ' '\$(${version})'\$'\""
@@ -24,7 +23,7 @@ define cabalinstall (
     $unl = $unless
   }
   if ($build_doc == true) {
-    $doc = '--enable-documentation --haddock-hyperlink-source'
+    $doc = "--enable-documentation $::haskell::doc_params"
   } else {
     $doc = '--disable-documentation'
   }
@@ -37,7 +36,7 @@ define cabalinstall (
   ## Install the .cabal file
   $multirun = '/vagrant/modules/cabalinstall/files/multi-run.sh'
   $outofmemory = '-e "ExitFailure 9" -e "ExitFailure 11"'
-  $cabal_install = "cabal install ${doc} ${libs} ${constraints}"
+  $cabal_install = "cabal install ${doc} ${libs} ${constraints} ${file}"
 
   exec { "cabal install ${title} (${name})":
     command => "bash '${multirun}' '${outofmemory}' '${cabal_install}' ${maxruns} 0",
@@ -50,6 +49,7 @@ define cabalinstall (
   ## Remove the (older) installed Version
   exec { "ghc-pkg unregister ${title} (${name})":
     command => "ghc-pkg unregister --force ${name}-\$(${version})",
+    cwd     => $cwd,
     onlyif  => $onlyif,
     unless  => ["test \$(${basicfilter} | wc -l) -lt 2", $unl],
     before  => Exec["cabal install ${title} (${name})"],

@@ -1,5 +1,6 @@
 ###  (c) Marcellus Siegburg, 2013-2014, License: GPL
 class haskell ($alex_version = undef, $git_packages = undef,
+$doc_params = '--haddock-hyperlink-source --haddock-all',
 $git_path = '/home/vagrant/cabal-git', $happy_version = undef,
 $hscolour_version = undef, $haddock_version = undef, $maxruns = 1,
 $other_libs = [], $wget_param = '', $packages = []) {
@@ -34,11 +35,15 @@ $other_libs = [], $wget_param = '', $packages = []) {
       version => $alex_version,
       bindir  => $bin_path,
       sandbox => true,
+      keep_sb => true,
+      cwd     => '/home/vagrant/sandboxes/alex',
       unless  => "test -f ${bin_path}/alex";
     'happy':
       version => $happy_version,
       bindir  => $bin_path,
       sandbox => true,
+      keep_sb => true,
+      cwd     => '/home/vagrant/sandboxes/happy',
       unless  => "test -f ${bin_path}/happy";
     'hscolour':
       version => $hscolour_version,
@@ -49,6 +54,8 @@ $other_libs = [], $wget_param = '', $packages = []) {
       version => $haddock_version,
       bindir  => $bin_path,
       sandbox => true,
+      keep_sb => true,
+      cwd     => '/home/vagrant/sandboxes/haddock',
       unless  => "test -f ${bin_path}/haddock";
   }
 

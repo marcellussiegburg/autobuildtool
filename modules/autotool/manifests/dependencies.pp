@@ -1,7 +1,7 @@
 ###  (c) Marcellus Siegburg, 2013-2014, License: GPL
 class autotool::dependencies ($build_doc = true) {
   if ($build_doc == true) {
-    $doc = '--enable-documentation --haddock-hyperlink-source'
+    $doc = "--enable-documentation $::haskell::doc_params"
   } else {
     $doc = '--disable-documentation'
   }
@@ -13,6 +13,7 @@ class autotool::dependencies ($build_doc = true) {
       $lib_dirs = '/usr/lib/mysql'
     }
   }
+  $fix = '--constraint "ghc installed" --constraint "transformers installed"'
   $name_version = '([[:alnum:]-]+)-([\.\d]+)$'
   $const = '--constraint=\1==\2'
   $constraints = regsubst($::haskell::packages_versioned, $name_version, $const)
@@ -24,12 +25,12 @@ class autotool::dependencies ($build_doc = true) {
               'relation', 'reporter', 'rewriting', 'tex', 'todoc', 'transport',
               'util']
   $autotool = ['interface', 'server-interface', 'server-implementation',
-               'collection', 'db']
+               'collection', 'db', 'yesod']
   $autolib_paths = prefix($autolib, "${::autotool::autolib_path}/")
   $autotool_paths = prefix($autotool, "${::autotool::autotool_path}/")
   $autolib_packages = join($autolib_paths, ' ')
   $autotool_packages = join($autotool_paths, ' ')
-  $get_deps = "cabal install --only-dependencies --dry-run ${constraint} ${extra} ${extra_git}"
+  $get_deps = "cabal install --only-dependencies --dry-run ${constraint} ${fix} ${extra} ${extra_git}"
   $tmp = '/home/vagrant/tmp_packages'
   $packages = '/home/vagrant/packages'
   $command = "cabal install ${doc} ${libs} ${extra_git}"
@@ -43,12 +44,12 @@ class autotool::dependencies ($build_doc = true) {
 
   exec { 'get dependencies':
     command => "${get_deps} ${autolib_packages} ${autotool_packages} > ${tmp}",
-    cwd     => '/home/vagrant',
+    cwd     => $::autotool::install_path,
   }
 
   exec { 'extract packages':
     command => "grep -v 'Resolving dependencies...' ${tmp} | grep -v 'In order' > ${packages}",
-    cwd     => '/home/vagrant',
+    cwd     => $::autotool::install_path,
     require => Exec['get dependencies'],
   }
 
@@ -59,7 +60,7 @@ class autotool::dependencies ($build_doc = true) {
 
   exec { 'install dependencies':
     command => $install_command,
-    cwd     => '/home/vagrant',
+    cwd     => $::autotool::install_path,
     require => Exec['extract packages'],
     unless  => "grep 'requested packages are already installed' ${packages}",
   }
@@ -67,6 +68,7 @@ class autotool::dependencies ($build_doc = true) {
   if ($::haskell::packages_versioned != []) {
     map($::haskell::packages_versioned) |$package| {
       cabalinstall::hackage { $package:
+        cwd            => $::autotool::install_path,
         build_doc      => $build_doc,
         extra_lib_dirs => $lib_dirs,
         require        => Exec['install dependencies'],
@@ -76,6 +78,7 @@ class autotool::dependencies ($build_doc = true) {
 
   if ($::haskell::packages_no_version != []) {
     cabalinstall::hackage { join($::haskell::packages_no_version, ' '):
+      cwd            => $::autotool::install_path,
       build_doc      => $build_doc,
       extra_lib_dirs => $lib_dirs,
       require        => Exec['install dependencies'],
@@ -93,7 +96,8 @@ class autotool::dependencies ($build_doc = true) {
     $extra_git = join(prefix($extras_git, "${::haskell::git_path}/"), ' ')
     map($extras_git) |$git| {
       cabalinstall { $git:
-        cwd            => "${::haskell::git_path}/${git}",
+        cwd            => $::autotool::install_path,
+        path           => "${::haskell::git_path}/${git}",
         build_doc      => $build_doc,
         extra_lib_dirs => $lib_dirs,
         require        => Exec['install dependencies'],
@@ -106,7 +110,7 @@ class autotool::dependencies ($build_doc = true) {
     $filter = join($filters, ' ')
     exec { 'install remaining dependencies':
       command => "${command} --dependencies-only ${autolib_packages} ${autotool_packages}",
-      cwd     => '/home/vagrant',
+      cwd     => $::autotool::install_path,
       unless  => 'grep "requested packages are already installed" ${packages}',
     }
   } else {

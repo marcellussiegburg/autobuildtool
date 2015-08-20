@@ -9,5 +9,6 @@ haskell::ghc::libgmp_dev: 'libgmp3-dev'
 haskell::other_libs:
  - 'libssl-dev'
  - 'libcrypto++-dev'
+ - 'libpcre++-dev'
 mysql::mysqlclient: 'libmysqlclient-dev'
 mysql::mysqlservice: 'mysql'

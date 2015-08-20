@@ -22,10 +22,12 @@ vm:
 # Autotool Configuration
 autotool::build_doc: true
 autotool::enable_highscore: true
+autotool::sandbox: true
+autotool::install_path: '/home/vagrant/tool/yesod'
 autotool::sources::autolib_url: 'git://autolat.imn.htwk-leipzig.de/git/autolib'
 autotool::sources::autolib_branch: 'for-ghc-7.8'
-autotool::sources::tool_url: 'git://autolat.imn.htwk-leipzig.de/git/tool'
-autotool::sources::tool_branch: 'for-ghc-7.8'
+autotool::sources::tool_url: 'https://github.com/marcellussiegburg/autotool.git'
+autotool::sources::tool_branch: 'yesod'
 autotool::database::school_name: 'school'
 autotool::database::school_mail_suffix: 'localhost'
 autotool::database::minister_matrikel_number: '0'
@@ -40,5 +42,5 @@ haskell::cabal_install::version: '1.20.0.3'
 haskell::maxruns: 10
 haskell::haddock_version: '2.15.0.2'
 haskell::packages:
- - http-streams-0.8.3.3
+ - blaze-html-0.7.1.0
 haskell::git_packages:

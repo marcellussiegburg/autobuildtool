@@ -8,7 +8,9 @@ class autotool::doc ($relative_links = true, $domain = 'http://localhost', $port
     $webroot = "${domain}:${port}"
   }
   $doc_path = 'ghc-doc'
-  $source_user = '/home/vagrant/.cabal/share/doc'
+  $hardwaremodel = inline_template("<%= %x{uname -i | tr -d '\n'} %>")
+  $folder = "${hardwaremodel}-linux-ghc-${::haskell::ghc::version}"
+  $source_user = "${::autotool::install_path}/.cabal-sandbox/share/doc/${folder}"
   $target_user = "${html_dir}/${doc_path}"
   $source_system = '/usr/local/share/doc/ghc/html'
   $target_system = "${html_dir}/${doc_path}/html"
