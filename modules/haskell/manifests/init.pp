@@ -3,7 +3,7 @@ class haskell ($alex_version = undef, $git_packages = undef,
 $doc_params = '--haddock-hyperlink-source --haddock-all',
 $git_path = '/home/vagrant/cabal-git', $happy_version = undef,
 $hscolour_version = undef, $haddock_version = undef, $maxruns = 1,
-$other_libs = [], $wget_param = '', $packages = []) {
+$other_libs = [], $bins = [], $wget_param = '', $packages = []) {
   include haskell::ghc
   include haskell::cabal
   include haskell::cabal_install
@@ -29,6 +29,22 @@ $other_libs = [], $wget_param = '', $packages = []) {
 
   Cabalinstall::Hackage['alex'] -> Cabalinstall::Hackage['happy']
   -> Cabalinstall::Hackage['hscolour'] -> Cabalinstall::Hackage['haddock']
+
+  map($bins) |$bin| {
+    cabalinstall::hackage { $bin:
+      bindir  => $bin_path,
+      sandbox => true,
+      unless  => "test -f ${bin_path}/${bin}",
+      require => Cabalinstall::Hackage['haddock'],
+      notify  => Exec[$bin]
+    }
+
+    exec { $bin:
+      command     => "touch ${bin_path}/${$bin}",
+      user        => 'root',
+      refreshonly => true,
+    }
+  }
 
   cabalinstall::hackage {
     'alex':

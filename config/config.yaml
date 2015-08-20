@@ -41,6 +41,9 @@ haskell::cabal::version: '1.20.0.2'
 haskell::cabal_install::version: '1.20.0.3'
 haskell::maxruns: 10
 haskell::haddock_version: '2.15.0.2'
+haskell::bins:
+ - hlint
+ - yesod-bin
 haskell::packages:
  - blaze-html-0.7.1.0
 haskell::git_packages:
