@@ -1,5 +1,5 @@
 ###  (c) Marcellus Siegburg, 2013, License: GPL
-class autotool::doc ($relative_links = true, $domain = 'http://localhost', $port = '80') {
+class autotool::doc ($relative_links = true, $domain = 'http://localhost', $port = '80', $disable = false) {
   $html_dir = $::autotool::html_dir
   $abs_to_rel = '/vagrant/modules/autotool/files/abs2rel.sh'
   if $relative_links {
@@ -31,34 +31,36 @@ class autotool::doc ($relative_links = true, $domain = 'http://localhost', $port
 
   $abs_to_rel_user = "bash \"${abs_to_rel}\" \"${target_user}\""
 
-  file {
-    [$target_user, $target_system]:
-      ensure => directory,
-      owner  => $::apache::apache_user,
-      group  => $::apache::apache_user,
-  }
+  if ($disable == false) {
+    file {
+      [$target_user, $target_system]:
+        ensure => directory,
+        owner  => $::apache::apache_user,
+        group  => $::apache::apache_user,
+    }
 
-  exec {
-    [$rsync_user, $rsync_system]:
-      user    => 'root',
-      require =>
+    exec {
+      [$rsync_user, $rsync_system]:
+        user    => 'root',
+        require =>
         [ File[$target_user],
           File[$target_system] ];
-    [$replace_user, $replace_system]:
-      user        => 'root',
-      refreshonly => true,
-      subscribe   =>
-        [ Exec[$rsync_user],
-          Exec[$rsync_system] ];
-  }
-  if $relative_links {
-    exec {
-      [$abs_to_rel_user]:
-        user        => 'root',
-        refreshonly => true,
-        subscribe   =>
+        [$replace_user, $replace_system]:
+          user        => 'root',
+          refreshonly => true,
+          subscribe   =>
+          [ Exec[$rsync_user],
+            Exec[$rsync_system] ];
+    }
+    if $relative_links {
+      exec {
+        [$abs_to_rel_user]:
+          user        => 'root',
+          refreshonly => true,
+          subscribe   =>
           [ Exec[$replace_user],
             Exec[$replace_system] ];
+      }
     }
   }
 }

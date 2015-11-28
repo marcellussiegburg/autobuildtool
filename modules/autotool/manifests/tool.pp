@@ -56,6 +56,7 @@ class autotool::tool ($build_doc = $::autotool::build_doc) {
         Cabalinstall['server-interface'],
         Cabalinstall['db'] ],
     onlyif  => "test -d ${path}/yesod",
+    unless  => "test -f ${::autotool::install_path}/.cabal-sandbox/bin/autotool-yesod.cgi",
   }
 
   # cabalinstall { 'test':
