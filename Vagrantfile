@@ -17,6 +17,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.network :forwarded_port, id: :ssh, guest: 22, host: vmconf['vm']['ssh_port'], auto_correct: vmconf['vm']['ssh_port_auto_correct']
   config.vm.network :forwarded_port, id: :http, guest: 80, host: vmconf['vm']['web_port'], auto_correct: vmconf['vm']['web_port_auto_correct']
+  config.vm.network :forwarded_port, id: :yesod, guest: 3000, host: vmconf['vm']['yesod_port'], auto_correct: vmconf['vm']['yesod_port_auto_correct']
 
   config.vm.provision :shell do |shell|
     shell.path = "prepare.sh"

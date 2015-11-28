@@ -110,6 +110,10 @@ class autotool::tool ($build_doc = $::autotool::build_doc) {
   }
 
   file {
+    "${::autotool::install_path}/config/mysql.yml":
+      ensure  => link,
+      require => Cabalinstall['yesod'],
+      target  => "${path}/yesod/config/mysql.sample.yml";
     "${cgi_bin}/Super.cgi":
       ensure  => file,
       require => Cabalinstall['db'],
