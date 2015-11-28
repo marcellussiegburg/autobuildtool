@@ -36,6 +36,7 @@ autotool::database::minister_familyname: 'Mustermann'
 autotool::database::minister_name: 'Max'
 autotool::database::minister_password: 'foobar'
 # Haskell Configuration
+haskell::wget_param: '--no-check-certificate'
 haskell::ghc::version: '7.8.3'
 haskell::cabal::version: '1.20.0.2'
 haskell::cabal_install::version: '1.20.0.3'
@@ -46,4 +47,5 @@ haskell::bins:
  - yesod-bin
 haskell::packages:
  - blaze-html-0.7.1.0
+ - haskell-src-exts-1.16.0.1
 haskell::git_packages:

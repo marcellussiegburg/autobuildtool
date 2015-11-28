@@ -6,7 +6,9 @@ apache::apache_user: 'apache'
 haskell::cabal_install::zlib_dev: 'zlib-devel'
 haskell::ghc::libgmp: 'gmp'
 haskell::ghc::libgmp_dev: 'gmp-devel'
+haskell::other_libs:
+ - 'pcre-devel'
 mysql::mysqlclient:
-  - 'mysql-devel'
-  - 'mysql-libs'
+ - 'mysql-devel'
+ - 'mysql-libs'
 mysql::mysqlservice: 'mysqld'

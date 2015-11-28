@@ -18,6 +18,7 @@ $other_libs = [], $bins = [], $wget_param = '', $packages = []) {
 
   exec { 'cabal update':
     command => 'cabal update',
+    user    => 'vagrant',
     require =>
       [ Class['haskell::cabal'],
         Class['haskell::cabal_install'] ],
@@ -26,6 +27,19 @@ $other_libs = [], $bins = [], $wget_param = '', $packages = []) {
   Exec['cabal update'] -> Cabalinstall::Hackage <| |>
   Exec['cabal update'] -> Cabalinstall::Git <| |>
   Exec['cabal update'] -> Cabalinstall <| |>
+
+  exec { 'cabal update (root)':
+    command => 'sudo /usr/local/bin/cabal update',
+    user    => 'root',
+    require =>
+      [ Class['haskell::cabal'],
+        Class['haskell::cabal_install'],
+	Exec['cabal update'] ],
+  }
+
+  Exec['cabal update (root)'] -> Cabalinstall::Hackage <| |>
+  Exec['cabal update (root)'] -> Cabalinstall::Git <| |>
+  Exec['cabal update (root)'] -> Cabalinstall <| |>
 
   Cabalinstall::Hackage['alex'] -> Cabalinstall::Hackage['happy']
   -> Cabalinstall::Hackage['hscolour'] -> Cabalinstall::Hackage['haddock']

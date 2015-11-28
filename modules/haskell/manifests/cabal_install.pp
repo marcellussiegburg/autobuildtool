@@ -23,7 +23,8 @@ class haskell::cabal_install ($zlib_dev, $version) {
   }
 
   exec { 'cabal-install bootstrap':
-    command => 'bash -Ec "CURL=\'curl -L\' sh bootstrap.sh"',
+    command => 'bash -Ec "CURL=\'curl -L\' sh bootstrap.sh --global"',
+    user    => 'root',
     cwd     => $path,
     require =>
       [ Exec['cabal-install extract'],
@@ -32,11 +33,6 @@ class haskell::cabal_install ($zlib_dev, $version) {
   }
 
   file {
-    'cabal-install link':
-      ensure  => link,
-      path    => '/usr/local/bin/cabal',
-      target  => '/home/vagrant/.cabal/bin/cabal',
-      require => Exec['cabal-install bootstrap'];
     $archive:
       ensure  => absent,
       force   => true,

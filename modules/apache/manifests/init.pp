@@ -4,10 +4,14 @@ class apache ($apache, $apache_user) {
     ensure => latest,
   }
 
-  exec { 'a2enmod cgi':
-    user    => 'root',
-    require => Package[$apache],
-    notify  => Service[$apache],
+  case $::osfamily {
+    debian: {
+      exec { 'a2enmod cgi':
+        user    => 'root',
+        require => Package[$apache],
+        notify  => Service[$apache],
+      }
+    }
   }
 
   service { $apache:
