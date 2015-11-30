@@ -26,11 +26,16 @@ autotool::build_doc: true
 autotool::enable_highscore: true
 autotool::sandbox: true
 autotool::install_path: '/home/vagrant/tool/yesod'
+autotool::autotool_path: '/home/vagrant/tool'
+autotool::autolib_path: '/home/vagrant/autolib'
 autotool::sources::disable: false
 autotool::sources::autolib_url: 'git://autolat.imn.htwk-leipzig.de/git/autolib'
 autotool::sources::autolib_branch: 'for-ghc-7.8'
 autotool::sources::tool_url: 'https://github.com/marcellussiegburg/autotool.git'
 autotool::sources::tool_branch: 'yesod'
+autotool::database::db: 'autoan'
+autotool::database::user: 'user'
+autotool::database::password: 'passwort'
 autotool::database::school_name: 'school'
 autotool::database::school_mail_suffix: 'localhost'
 autotool::database::minister_matrikel_number: '0'
@@ -38,7 +43,6 @@ autotool::database::minister_email: 'vagrant@localhost'
 autotool::database::minister_familyname: 'Mustermann'
 autotool::database::minister_name: 'Max'
 autotool::database::minister_password: 'foobar'
-autotool::doc::disable: false
 # Haskell Configuration
 haskell::wget_param: '--no-check-certificate'
 haskell::ghc::version: '7.8.3'

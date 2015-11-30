@@ -1,7 +1,6 @@
 ###  (c) Marcellus Siegburg, 2013-2014, License: GPL
-class autotool ($build_doc = true, $html_dir, $cgi_bin, $sandbox = false,
-$install_path = '/home/vagrant', $autolib_path = '/home/vagrant/autolib',
-$autotool_path = '/home/vagrant/tool') {
+class autotool ($build_doc = true, $html_dir, $cgi_bin, $enable_highscore,
+$sandbox, $install_path, $autolib_path, $autotool_path) {
   include autotool::sources
   include autotool::dependencies
   include autotool::autolib

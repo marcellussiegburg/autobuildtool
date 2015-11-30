@@ -3,6 +3,7 @@ class autotool::highscore {
   $scorer = "${::autotool::install_path}/.cabal-sandbox/bin/autotool-Scorer"
   $logs = '/space/autotool/log/*/*/*/CGI'
   $html_dir = $::autotool::html_dir
+  $cgi_bin = $::autotool::cgi_bin
   $scores = "${html_dir}/high/score.html"
 
   file {
@@ -10,7 +11,7 @@ class autotool::highscore {
       ensure => directory,
       owner  => $::apache::apache_user,
       group  => $::apache::apache_user;
-    ['/space', '/space/autotool']:
+    ['/space', '/space/autotool', '/space/autotool/new-cache', "${cgi_bin}/../pics"]:
       ensure => directory,
       owner  => $::apache::apache_user,
       group  => $::apache::apache_user;

@@ -55,6 +55,7 @@ On linux systems it might be helpful to add `/opt/vagrant/bin` to the PATH.
 ```bash
 git clone git@github.com:marcellussiegburg/autobuildtool.git
 cd autobuildtool
+git submodule update --init
 vagrant up
 ```
 

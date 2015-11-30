@@ -56,7 +56,7 @@ class autotool::tool ($build_doc = $::autotool::build_doc) {
         Cabalinstall['server-interface'],
         Cabalinstall['db'] ],
     onlyif  => "test -d ${path}/yesod",
-    unless  => "test -f ${::autotool::install_path}/.cabal-sandbox/bin/autotool-yesod.cgi",
+    unless  => "test -f ${::autotool::install_path}/.cabal-sandbox/bin/autotool-yesod.cgi && test -z $(find ${path}/yesod -type f -path ${::autotool::install_path}/.cabal-sandbox -prune -newer ${::autotool::install_path}/.cabal-sandbox/bin/autotool-yesod.cgi)",
   }
 
   # cabalinstall { 'test':
@@ -91,7 +91,7 @@ class autotool::tool ($build_doc = $::autotool::build_doc) {
         Cabalinstall['server-interface'],
         File['Config.hs link'] ],
     onlyif  => "test -d ${path}/server-implementation",
-    unless  => 'test -f ${::autotool::install_path}/.cabal-sandbox/bin/autotool.cgi',
+    unless  => "test -f ${::autotool::install_path}/.cabal-sandbox/bin/autotool.cgi && test -z $(find ${path}/server-implementation -type f -newer ${::autotool::install_path}/.cabal-sandbox/bin/autotool.cgi)",
   }
 
   file { "${cgi_bin}/autotool-yesod.cgi":
