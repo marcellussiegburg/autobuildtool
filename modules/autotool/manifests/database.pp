@@ -6,9 +6,9 @@ $minister_name, $minister_password, $db, $user, $password) {
   $minister_id = 1
   $tool_path = $::autotool::autotool_path
   $hardwaremodel = inline_template("<%= %x{uname -i | tr -d '\n'} %>")
-  $folder = "${hardwaremodel}-linux-ghc-${::haskell::ghc::version}"
+  $folder = "${hardwaremodel}-linux-ghc-${::haskell::ghc::version}-packages.conf.d"
   $package_db = "-package-db=/home/vagrant/tool/yesod/.cabal-sandbox/${folder}/"
-  $minister_password_enc = "ghc ${package_db} -i${tool_path}/db/src Operate.Crypt -e 'encrypt \"${minister_password}\"'"
+  $minister_password_enc = "/usr/local/bin/ghc ${package_db} -i${tool_path}/db/src Operate.Crypt -e 'encrypt \"${minister_password}\"'"
 
   exec { 'Create Database':
     command => "echo 'GRANT ALL ON ${db}.* TO \"${user}\"@\"localhost\" IDENTIFIED BY \"${password}\"; CREATE DATABASE ${db};' | mysql -u root",
