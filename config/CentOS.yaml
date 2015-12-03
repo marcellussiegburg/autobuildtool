@@ -12,3 +12,4 @@ mysql::mysqlclient:
  - 'mysql-devel'
  - 'mysql-libs'
 mysql::mysqlservice: 'mysqld'
+mysql::mysqlserver: 'mysql-server'

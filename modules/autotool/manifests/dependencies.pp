@@ -30,7 +30,7 @@ class autotool::dependencies ($build_doc = true) {
   $autotool_paths = prefix($autotool, "${::autotool::autotool_path}/")
   $autolib_packages = join($autolib_paths, ' ')
   $autotool_packages = join($autotool_paths, ' ')
-  $get_deps = "cabal install --only-dependencies --dry-run ${constraint} ${fix} ${extra} ${extra_git}"
+  $get_deps = "cabal install --only-dependencies --max-backjumps=-1 --dry-run ${constraint} ${fix} ${extra} ${extra_git}"
   $tmp = '/home/vagrant/tmp_packages'
   $packages = '/home/vagrant/packages'
   $command = "cabal install ${doc} ${libs} ${extra_git}"

@@ -12,6 +12,7 @@ $other_libs = [], $bins = [], $wget_param = '', $packages = []) {
   $filter_packages = '/vagrant/modules/haskell/files/filter_packages.sh'
   $packages_to_constraints = '/vagrant/modules/haskell/files/packages_to_constraints.sh'
   $bin_path = '/usr/local/sbin'
+  $share_path = '/usr/local/share'
 
   Class['haskell::ghc'] -> Class['haskell::cabal']
   Class['haskell::ghc'] -> Class['haskell::cabal_install']
@@ -29,9 +30,11 @@ $other_libs = [], $bins = [], $wget_param = '', $packages = []) {
   Exec['cabal update'] -> Cabalinstall <| |>
 
   exec { 'cabal update (root)':
-    command => 'sudo /usr/local/bin/cabal update',
-    user    => 'root',
-    require =>
+    command     => '/usr/local/bin/cabal update',
+    cwd         => '/root',
+    environment => 'HOME=/root',
+    user        => 'root',
+    require     =>
       [ Class['haskell::cabal'],
         Class['haskell::cabal_install'],
 	Exec['cabal update'] ],
@@ -47,6 +50,7 @@ $other_libs = [], $bins = [], $wget_param = '', $packages = []) {
   map($bins) |$bin| {
     cabalinstall::hackage { $bin:
       bindir  => $bin_path,
+      datadir => $share_path,
       sandbox => true,
       unless  => "test -f ${bin_path}/${bin}",
       require => Cabalinstall::Hackage['haddock'],
@@ -64,28 +68,26 @@ $other_libs = [], $bins = [], $wget_param = '', $packages = []) {
     'alex':
       version => $alex_version,
       bindir  => $bin_path,
+      datadir => $share_path,
       sandbox => true,
-      keep_sb => true,
-      cwd     => '/home/vagrant/sandboxes/alex',
       unless  => "test -f ${bin_path}/alex";
     'happy':
       version => $happy_version,
       bindir  => $bin_path,
+      datadir => $share_path,
       sandbox => true,
-      keep_sb => true,
-      cwd     => '/home/vagrant/sandboxes/happy',
       unless  => "test -f ${bin_path}/happy";
     'hscolour':
       version => $hscolour_version,
       bindir  => $bin_path,
+      datadir => $share_path,
       sandbox => true,
       unless  => "test -f ${bin_path}/HsColour";
     'haddock':
       version => $haddock_version,
       bindir  => $bin_path,
+      datadir => $share_path,
       sandbox => true,
-      keep_sb => true,
-      cwd     => '/home/vagrant/sandboxes/haddock',
       unless  => "test -f ${bin_path}/haddock";
   }
 

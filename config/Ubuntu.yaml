@@ -11,4 +11,5 @@ haskell::other_libs:
  - 'libcrypto++-dev'
  - 'libpcre++-dev'
 mysql::mysqlclient: 'libmysqlclient-dev'
+mysql::mysqlserver: 'mysql-server'
 mysql::mysqlservice: 'mysql'

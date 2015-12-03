@@ -29,6 +29,7 @@ node default {
   }
 
   Stage['main'] -> Stage['test']
+  Package['wget'] -> Class['haskell']
   Package['make'] -> Class['haskell'] -> Class['autotool']
   Class['apache'] -> Class['autotool']
   Class['mysql'] -> Class['autotool']
@@ -42,6 +43,8 @@ node default {
     'w3m':
       ensure => latest;
     'graphviz':
+      ensure => latest;
+    'wget':
       ensure => latest;
   }
 }

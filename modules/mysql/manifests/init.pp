@@ -1,6 +1,6 @@
 ###  (c) Marcellus Siegburg, 2013-2014, License: GPL
-class mysql ($mysqlclient, $mysqlservice) {
-  package { 'mysql-server':
+class mysql ($mysqlclient, $mysqlserver, $mysqlservice) {
+  package { $mysqlserver:
     ensure => latest,
   }
 
@@ -11,6 +11,6 @@ class mysql ($mysqlclient, $mysqlservice) {
   service { $mysqlservice:
     ensure  => running,
     enable  => true,
-    require => Package['mysql-server'],
+    require => Package[$mysqlserver],
   }
 }

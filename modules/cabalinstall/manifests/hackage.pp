@@ -2,7 +2,7 @@
 define cabalinstall::hackage ($build_doc = true, $bindir = undef,
 $keep = false, $extra_lib_dirs = undef, $maxruns = $::haskell::maxruns,
 $onlyif = undef, $sandbox = false, $keep_sb = false, $unless = undef,
-$version = undef, $cwd = '/home/vagrant') {
+$version = undef, $cwd = '/home/vagrant', $datadir = undef) {
   $package = $version ? {
     undef    => $name,
     default  => "${name}-${version}",
@@ -22,6 +22,11 @@ $version = undef, $cwd = '/home/vagrant') {
   } else {
     $unl = $unless
   }
+  if ($datadir == undef) {
+    $datad = ''
+  } else {
+    $datad = "--datadir=${datadir}"
+  }
   if ($bindir == undef) {
     $bind = ''
   } else {
@@ -29,7 +34,7 @@ $version = undef, $cwd = '/home/vagrant') {
   }
   $multirun = '/vagrant/modules/cabalinstall/files/multi-run.sh'
   $outofmemory = '-e "ExitFailure 9" -e "ExitFailure 11"'
-  $cabal_install = "cabal install ${bind} ${doc} ${libs} ${package}"
+  $cabal_install = "cabal install ${bind} ${datad} ${doc} ${libs} ${package}"
   $other_versions = "ghc-pkg list ${name} | grep ${name} | grep -v ${package}"
   $remove = "for i in \$(${other_versions}); do ghc-pkg unregister \$i; done"
   $command = "bash '${multirun}' '${outofmemory}' '${cabal_install}' ${maxruns} 0"
@@ -40,11 +45,9 @@ $version = undef, $cwd = '/home/vagrant') {
     } else {
       $sb = "/tmp/sandbox-${title}"
       exec { "remove sandbox ${sb} for ${title}":
-        command => "rm -rf ${sb}",
-        user    => $user,
-        require => Exec["cabal install ${title}"],
-        onlyif  => $onlyif,
-        unless  => $unl,
+        command   => "rm -rf ${sb}",
+        user      => $user,
+        subscribe => Exec["cabal install ${title}"],
       }
     }
     exec { "initialize sandbox ${sb} for ${title}":

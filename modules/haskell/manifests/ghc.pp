@@ -39,8 +39,16 @@ class haskell::ghc ($libgmp, $libgmp_dev, $version) {
     require => Package[$libgmp],
   }
 
+  exec { 'ln -s /usr/lib64/libgmp.so.10 /usr/lib64/libgmp.so.3':
+    user    => 'root',
+    creates => '/usr/lib64/libgmp.so.3',
+    onlyif  => 'test -f /usr/lib64/libgmp.so.10',
+    require => Package[$libgmp],
+    before  => Exec['ghc configure'],
+  }
+
   package { $::haskell::other_libs:
-    ensure => latest,
+    ensure  => latest,
     require => Package[$libgmp_dev],
   }
 
